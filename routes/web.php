@@ -12,7 +12,7 @@ Route::get('/', function () {
 
 Route::get('/iniciar-sesion', function () {
     return view('IniciarSesion');
-})->name('iniciarsesion');
+})->name('login');
 
 Route::post('/iniciar-sesion', [AuthController::class, 'iniciarSesion'])->name('iniciarsesion.post');
 // routes/web.php
