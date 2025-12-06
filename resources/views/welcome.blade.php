@@ -101,8 +101,22 @@
         <!-- Verificación de si el usuario está autenticado -->
         <div class="buttons">
             @if (Auth::check())
-                <!-- Si está autenticado, redirigir al dashboard -->
-                <a href="{{ route('dashboard') }}">Ir al Dashboard</a>
+                <!-- Si está autenticado, redirigir al dashboard correspondiente según el rol -->
+                @php
+                    // Obtener el rol del usuario autenticado
+                    $userRole = "ADMIN"; // Esto lo puedes cambiar con la lógica de tu base de datos si es necesario
+                    // Si tienes el rol en la base de datos, reemplázalo con:
+                    // $userRole = Auth::user()->role;
+                @endphp
+
+                @if ($userRole === "JUEZ")
+                    <a href="{{ route('dashboard.juez') }}">Ir al Dashboard Juez</a>
+                @elseif ($userRole === "ESTUDIANTE")
+                    <a href="{{ route('dashboard.estudiante') }}">Ir al Dashboard Estudiante</a>
+                @else
+                    <a href="{{ route('dashboard.admin') }}">Ir al Dashboard Admin</a>
+                @endif
+
             @else
                 <!-- Si no está autenticado, mostrar botones de Login y Register -->
                 <a href="{{ route('iniciarsesion') }}">Iniciar sesión</a>
