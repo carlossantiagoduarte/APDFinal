@@ -98,31 +98,28 @@
             </div>
         </div>
 
-        <!-- Verificación de si el usuario está autenticado -->
         <div class="buttons">
             @if (Auth::check())
-                <!-- Si está autenticado, redirigir al dashboard correspondiente según el rol -->
-                @php
-                    // Obtener el rol del usuario autenticado
-                    $userRole = "ADMIN"; // Esto lo puedes cambiar con la lógica de tu base de datos si es necesario
-                    // Si tienes el rol en la base de datos, reemplázalo con:
-                    // $userRole = Auth::user()->role;
-                @endphp
 
-                @if ($userRole === "JUEZ")
-                    <a href="{{ route('dashboard.juez') }}">Ir al Dashboard Juez</a>
-                @elseif ($userRole === "ESTUDIANTE")
-                    <a href="{{ route('dashboard.estudiante') }}">Ir al Dashboard Estudiante</a>
-                @else
-                    <a href="{{ route('dashboard.admin') }}">Ir al Dashboard Admin</a>
-                @endif
+            @if (Auth::user()->hasRole('Juez'))
+                <a href="{{ route('dashboard.juez') }}">Ir al Dashboard Juez</a>
 
-            @else
-                <!-- Si no está autenticado, mostrar botones de Login y Register -->
-                <a href="{{ route('iniciarsesion') }}">Iniciar sesión</a>
-                <a href="{{ route('registrarusuario') }}">Registrarse</a>
+            @elseif (Auth::user()->hasRole('Estudiante'))
+                <a href="{{ route('dashboard.estudiante') }}">Ir al Dashboard Estudiante</a>
+
+            @else (Auth::user()->hasRole('Admin'))
+                <a href="{{ route('dashboard.admin') }}">Ir al Dashboard Admin</a>
+
             @endif
-        </div>
+            
+
+    @else
+        <!-- Si no está autenticado -->
+        <a href="{{ route('iniciarsesion') }}">Iniciar sesión</a>
+        <a href="{{ route('registrarusuario') }}">Registrarse</a>
+    @endif
+</div>
+
     </div>
 
     <footer>
