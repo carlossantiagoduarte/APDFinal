@@ -10,12 +10,28 @@ use Illuminate\Support\Facades\Auth; // Para saber quién es el usuario
 class AdminController extends Controller
 {
     // FUNCIÓN 1: Muestra el Dashboard con la lista de eventos
-    public function index()
+    public function index(Request $request)
     {
-        // Traemos los eventos ordenados (el más nuevo primero)
-        $events = Event::orderBy('created_at', 'desc')->get();
+        $query = Event::query();
 
-        // Retornamos la vista pasando la variable $events
+        // 1. Buscador de Texto (Nombre o Lugar)
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'LIKE', "%{$search}%")
+                  ->orWhere('location', 'LIKE', "%{$search}%");
+            });
+        }
+
+        // 2. Filtro de FECHA (Calendario)
+        // 'whereDate' compara solo la fecha (YYYY-MM-DD) ignorando la hora
+        if ($request->filled('filter_date')) {
+            $query->whereDate('start_date', $request->filter_date);
+        }
+
+        // Ordenamos y obtenemos resultados
+        $events = $query->orderBy('created_at', 'desc')->get();
+
         return view('Admin.DashboardAdmin', compact('events'));
     }
 
