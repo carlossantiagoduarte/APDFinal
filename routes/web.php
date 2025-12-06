@@ -1,22 +1,54 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+
 
 Route::get('/', function () {
     return view('welcome');
 });
 
+
 Route::get('/iniciar-sesion', function () {
     return view('IniciarSesion');
 })->name('iniciarsesion');
+
+Route::post('/iniciar-sesion', [AuthController::class, 'iniciarSesion'])->name('iniciarsesion.post');
+// routes/web.php
+
+// Ruta para cerrar sesión
+Route::post('/logout', function () {
+    Auth::logout();
+    return redirect('/'); // Redirige al usuario después de cerrar sesión (puedes cambiar la URL a la que desees)
+})->name('logout');
+
+// Rutas para los dashboards
+
+// Dashboard para el rol de Juez
+Route::get('/dashboard/juez', function () {
+    return view('Juez.DashboardJuez');  // Ruta a la vista DashboardJuez dentro de la carpeta Juez
+})->name('dashboard.juez')->middleware('auth');
+
+// Dashboard para el rol de Estudiante
+Route::get('/dashboard/estudiante', function () {
+    return view('Estudiante.DashboardEstudiante');  // Ruta a la vista DashboardEstudiante dentro de la carpeta Estudiante
+})->name('dashboard.estudiante')->middleware('auth');
+
+// Dashboard para el rol de Admin
+Route::get('/dashboard/admin', function () {
+    return view('Admin.DashboardAdmin');  // Ruta a la vista DashboardAdmin dentro de la carpeta Admin
+})->name('dashboard.admin')->middleware('auth');
+
+
+// Ruta para el dashboard, accesible solo si el usuario está autenticado
+Route::get('/dashboard', function () {
+    return view('Dashboard');
+})->middleware('auth')->name('dashboard');
 
 Route::get('/Registrar-Usuario', function () {
     return view('RegistrarUsuario');
 })->name('registrarusuario');
 
-Route::get('/dashboard', function () {
-    return view('Dashboard');
-})->name('dashboard');
 
 Route::get('/crear-evento', function () {
     return view('Admin.CrearEvento');
