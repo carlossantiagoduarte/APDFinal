@@ -1,0 +1,403 @@
+/* RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* =============================== */
+/* NAVBAR */
+/* =============================== */
+.navbar {
+    width: 100%;
+    background: #2E4A3F;
+    color: white;
+    padding: 16px 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.navbar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+/* Logo */
+.logo {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    animation: fadeIn 0.6s ease forwards;
+}
+
+.site-title {
+    font-family: 'Jomolhari';
+    font-size: clamp(20px, 5vw, 40px);
+    font-weight: 200;
+    opacity: 0;
+    animation: slideIn 0.6s ease forwards;
+    animation-delay: .15s;
+    margin-left: 10px;
+    white-space: nowrap;
+}
+
+/* USER MENU */
+.user-menu-container {
+    position: relative;
+}
+
+.user-name {
+    font-size: clamp(14px, 2vw, 18px);
+    font-weight: 500;
+    cursor: pointer;
+    padding: 8px 10px;
+    border-radius: 6px;
+    transition: background .2s, transform .25s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    opacity: 0;
+    animation: slideIn 0.6s ease forwards;
+    animation-delay: .3s;
+}
+
+.user-name:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+}
+
+.arrow {
+    width: 18px;
+    transition: transform 0.3s ease;
+}
+
+.dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    color: black;
+    width: 170px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    padding: 10px 0;
+    opacity: 0;
+    transform: translateY(-10px);
+    pointer-events: none;
+    transition: all 0.25s ease;
+    z-index: 10;
+}
+
+.dropdown.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.user-name.active .arrow {
+    transform: rotate(180deg);
+}
+
+.dropdown a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 15px;
+    text-decoration: none;
+    color: #111;
+    font-size: 16px;
+    transition: background 0.2s ease;
+}
+
+.dropdown a:hover {
+    background: #eee;
+}
+
+.dropdown a svg {
+    width: 20px;
+    height: 20px;
+    stroke: #111;
+    transition: stroke .2s ease, transform .2s ease;
+}
+
+.dropdown a:hover svg {
+    stroke: #000;
+    transform: scale(1.1);
+}
+
+/* ICONOS NAVBAR */
+.nav-icon {
+    width: 22px;
+    height: 22px;
+    stroke: white;
+    stroke-width: 1.8;
+    transition: transform .25s ease, stroke .25s ease;
+}
+
+.nav-icon:hover {
+    transform: scale(1.15);
+    stroke: #C8FFD7;
+}
+
+/* =============================== */
+/* ANIMACIONES */
+/* =============================== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.85);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+
+/* =============================== */
+/* FOOTER */
+/* =============================== */
+.footer {
+    background: #3C3C3C;
+    color: white;
+    padding: 40px 5%;
+    font-family: 'Inter';
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.footer-grid h3 {
+    font-size: clamp(16px, 2vw, 20px);
+    font-weight: 250;
+}
+
+.footer-grid li,
+.footer-grid p {
+    font-size: clamp(12px, 1.5vw, 14px);
+    font-weight: 150;
+    margin: 5px 0;
+}
+
+.footer-copy {
+    text-align: center;
+    margin-top: 25px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    background: #f4f4f4;
+}
+
+/* ===== MULTISTEP ===== */
+.step {
+    display: none;
+    animation: fade .4s ease;
+}
+
+.step.active {
+    display: block;
+}
+
+@keyframes fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* ================================== */
+/*           SOLICITUDES              */
+/* ================================== */
+
+.solicitudes-container {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+.solicitudes-container .title {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.tabla-solicitud {
+    overflow-x: auto;
+    background: white;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 650px; /* evita que se rompa en pantallas pequeñas */
+}
+
+thead {
+    background: #2E4A3F;
+    color: white;
+}
+
+thead th {
+    padding: 14px;
+    font-size: 16px;
+    text-align: left;
+    white-space: nowrap;
+}
+
+tbody td {
+    padding: 14px;
+    border-bottom: 1px solid #ddd;
+    font-size: 15px;
+}
+
+tbody tr:hover {
+    background: #f3f3f3;
+}
+
+.acciones {
+    display: flex;
+    gap: 10px;
+}
+
+/* BOTONES */
+.btn {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: .2s;
+    white-space: nowrap;
+}
+
+.btn.aceptar {
+    background: #2ecc71;
+    color: white;
+}
+
+.btn.aceptar:hover {
+    background: #27ae60;
+}
+
+.btn.rechazar {
+    background: #e74c3c;
+    color: white;
+}
+
+.btn.rechazar:hover {
+    background: #c0392b;
+}
+
+/* ========================================================= */
+/*                        RESPONSIVE                         */
+/* ========================================================= */
+
+/* TABLETS */
+@media (max-width: 992px) {
+
+    .tabla-solicitud {
+        padding: 15px;
+    }
+
+    thead th {
+        font-size: 15px;
+    }
+
+    tbody td {
+        font-size: 14px;
+    }
+
+    .btn {
+        padding: 7px 12px;
+        font-size: 13px;
+    }
+}
+
+/* CELULARES GRANDES (iPhone 13, Samsung A, etc.) */
+@media (max-width: 768px) {
+
+    .solicitudes-container {
+        padding: 10px;
+        margin-top: 20px;
+    }
+
+    .title {
+        font-size: 24px;
+    }
+
+    table {
+        min-width: 550px; /* permite scroll horizontal bonito */
+    }
+}
+
+/* CELULARES MEDIANOS */
+@media (max-width: 600px) {
+
+    .btn {
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+
+    tbody td {
+        padding: 10px;
+    }
+}
+
+/* CELULARES PEQUEÑOS (iPhone SE, teléfonos económicos) */
+@media (max-width: 450px) {
+
+    .title {
+        font-size: 20px;
+    }
+
+    .tabla-solicitud {
+        padding: 10px;
+        border-radius: 10px;
+    }
+
+    table {
+        min-width: 480px;
+    }
+
+    .btn {
+        padding: 5px 8px;
+        font-size: 11px;
+    }
+
+    .acciones {
+        flex-direction: column;
+        gap: 6px;
+    }
+}
