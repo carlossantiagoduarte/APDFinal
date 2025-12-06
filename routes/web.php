@@ -40,11 +40,10 @@ Route::get('/dashboard/admin', function () {
     return view('Admin.DashboardAdmin');  // Ruta a la vista DashboardAdmin dentro de la carpeta Admin
 })->name('dashboard.admin')->middleware('auth');
 
+Route::get('/solicitudes-equipo', function () {
+    return view('Estudiante.SolicitudesEquipo');  // Aquí está la ruta con la carpeta Estudiante
+})->name('solicitudesequipo');
 
-// Ruta para el dashboard, accesible solo si el usuario está autenticado
-Route::get('/dashboard', function () {
-    return view('Dashboard');
-})->middleware('auth')->name('dashboard');
 
 Route::get('/Registrar-Usuario', function () {
     return view('RegistrarUsuario');
