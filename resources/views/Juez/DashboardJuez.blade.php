@@ -124,10 +124,6 @@
             <select>
                 <option>Todos los lugares</option>
             </select>
-            <!-- Botones de administración -->
-            <div class="new-event">
-                <button class="btn-search">Crear evento</button>
-            </div>
         </div>
     </section>
 
