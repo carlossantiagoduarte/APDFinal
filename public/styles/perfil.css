@@ -1,0 +1,512 @@
+/* RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;    
+}
+
+/* =============================== */
+/* NAVBAR */
+/* =============================== */
+.navbar {
+    font-family: 'Inter', sans-serif !important;
+    width: 100%;
+    background: #2E4A3F;
+    color: white;
+    padding: 16px 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.navbar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+/* Logo */
+.logo {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    animation: fadeIn 0.6s ease forwards;
+}
+
+.site-title {
+    font-family: 'Jomolhari';
+    font-size: clamp(20px, 5vw, 40px);
+    font-weight: 200;
+    opacity: 0;
+    animation: slideIn 0.6s ease forwards;
+    animation-delay: .15s;
+    margin-left: 10px;
+    white-space: nowrap;
+}
+
+/* USER MENU */
+.user-menu-container {
+    position: relative;
+}
+
+.user-name {
+    font-size: clamp(14px, 2vw, 18px);
+    font-weight: 500;
+    cursor: pointer;
+    padding: 8px 10px;
+    border-radius: 6px;
+    transition: background .2s, transform .25s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    opacity: 0;
+    animation: slideIn 0.6s ease forwards;
+    animation-delay: .3s;
+}
+
+.user-name:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+}
+
+.arrow {
+    width: 18px;
+    transition: transform 0.3s ease;
+}
+
+.dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    color: black;
+    width: 170px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    padding: 10px 0;
+    opacity: 0;
+    transform: translateY(-10px);
+    pointer-events: none;
+    transition: all 0.25s ease;
+    z-index: 10;
+}
+
+.dropdown.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.user-name.active .arrow {
+    transform: rotate(180deg);
+}
+
+.dropdown a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 15px;
+    text-decoration: none;
+    color: #111;
+    font-size: 16px;
+    transition: background 0.2s ease;
+}
+
+.dropdown a:hover {
+    background: #eee;
+}
+
+.dropdown a svg {
+    width: 20px;
+    height: 20px;
+    stroke: #111;
+    transition: stroke .2s ease, transform .2s ease;
+}
+
+.dropdown a:hover svg {
+    stroke: #000;
+    transform: scale(1.1);
+}
+
+/* ICONOS NAVBAR */
+.nav-icon {
+    width: 22px;
+    height: 22px;
+    stroke: white;
+    stroke-width: 1.8;
+    transition: transform .25s ease, stroke .25s ease;
+}
+
+.nav-icon:hover {
+    transform: scale(1.15);
+    stroke: #C8FFD7;
+}
+
+/* =============================== */
+/* ANIMACIONES */
+/* =============================== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.85);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+
+/* =============================== */
+/* FOOTER */
+/* =============================== */
+.footer {
+    background: #3C3C3C;
+    color: white;
+    padding: 40px 5%;
+    font-family: 'Inter';
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.footer-grid h3 {
+    font-size: clamp(16px, 2vw, 20px);
+    font-weight: 250;
+}
+
+.footer-grid li,
+.footer-grid p {
+    font-size: clamp(12px, 1.5vw, 14px);
+    font-weight: 150;
+    margin: 5px 0;
+}
+
+.footer-copy {
+    text-align: center;
+    margin-top: 25px;
+}
+
+/* FLECHA */
+.profile-back-arrow {
+    position: absolute;
+    top: 25px;
+    left: 30px;
+    font-size: 26px;
+    text-decoration: none;
+    color: white;
+}
+
+/* CONTENEDOR */
+.profile-container {
+    display: flex;
+    height: 100vh;
+}
+
+/* IZQUIERDA */
+.profile-info {
+    font-family: 'Inter';
+    width: 50%;
+    background: url(../images/background-login.jpeg) center/cover no-repeat;
+    padding: 100px;
+    color: white;
+}
+
+.profile-info h1 {
+    font-family: 'Jomolhari';
+    font-size: 48px;
+}
+
+.profile-info p {
+    margin-top: 10px;
+    font-size: 18px;
+}
+
+/* FORM */
+.profile-form-box {
+    
+    font-family: 'Inter';
+    width: 50%;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* LOGO */
+.profile-logo {
+    width: 120px;
+    margin-bottom: 20px;
+}
+
+/* FORM */
+.profile-form {
+    width: 70%;
+}
+
+.profile-form label {
+    font-weight: bold;
+}
+
+.profile-form input {
+    width: 100%;
+    padding: 10px;
+    margin: 6px 0 15px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+/* BOTÓN */
+.profile-btn {
+    
+    font-family: 'Inter';
+    width: 100%;
+    padding: 12px;
+    background: #2E4A3F;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.profile-btn:hover {
+    opacity: 0.9;
+}
+/* ================================= */
+/* LAPTOPS MEDIANAS (1366px hacia abajo) */
+/* ================================= */
+@media (max-width: 1366px) {
+    .profile-info {
+        padding: 70px;
+    }
+
+    .profile-form {
+        width: 80%;
+    }
+
+    .profile-info h1 {
+        font-size: 40px;
+    }
+
+    .site-title {
+        font-size: 32px;
+    }
+}
+
+
+/* ================================= */
+/* LAPTOPS PEQUEÑAS y TABLETS GRANDES */
+/* ================================= */
+@media (max-width: 1200px) {
+    .profile-container {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .profile-info,
+    .profile-form-box {
+        width: 100%;
+        height: auto;
+    }
+
+    .profile-info {
+        padding: 60px 40px;
+        text-align: center;
+    }
+
+    .profile-info h1 {
+        font-size: 36px;
+    }
+
+    .profile-info p {
+        font-size: 16px;
+    }
+
+    .profile-form {
+        width: 85%;
+    }
+}
+
+
+/* ================================= */
+/* TABLETS */
+/* ================================= */
+@media (max-width: 900px) {
+
+    .navbar {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        text-align: center;
+    }
+
+    .navbar-left {
+        justify-content: center;
+    }
+
+    .profile-info h1 {
+        font-size: 30px;
+    }
+
+    .profile-form {
+        width: 90%;
+    }
+
+    .profile-logo {
+        width: 100px;
+    }
+
+    .user-name {
+        font-size: 14px;
+    }
+
+    .dropdown {
+        width: 150px;
+    }
+}
+
+
+/* ================================= */
+/* CELULARES GRANDES */
+/* ================================= */
+@media (max-width: 600px) {
+
+    .profile-info {
+        padding: 40px 25px;
+    }
+
+    .profile-info h1 {
+        font-size: 26px;
+    }
+
+    .profile-info p {
+        font-size: 14px;
+    }
+
+    .profile-form {
+        width: 95%;
+    }
+
+    .profile-form input {
+        font-size: 14px;
+    }
+
+    .profile-btn {
+        font-size: 14px;
+    }
+
+    .profile-logo {
+        width: 85px;
+    }
+
+    .navbar {
+        padding: 14px 10px;
+    }
+
+    .logo {
+        width: 50px;
+        height: 50px;
+    }
+
+    .site-title {
+        font-size: 22px;
+    }
+
+    .footer-grid {
+        text-align: center;
+    }
+
+    .profile-back-arrow {
+        font-size: 22px;
+        top: 15px;
+        left: 15px;
+    }
+}
+
+
+/* ================================= */
+/* CELULARES PEQUEÑOS */
+/* ================================= */
+@media (max-width: 420px) {
+
+    .profile-info h1 {
+        font-size: 22px;
+    }
+
+    .profile-info p {
+        font-size: 13px;
+    }
+
+    .profile-logo {
+        width: 70px;
+    }
+
+    .site-title {
+        font-size: 18px;
+    }
+
+    .dropdown {
+        right: -10px;
+    }
+}
+
+
+/* ================================= */
+/* 4K SCREENS Y PANTALLAS GRANDES */
+/* ================================= */
+@media (min-width: 1800px) {
+    .profile-info {
+        padding: 140px;
+    }
+
+    .profile-info h1 {
+        font-size: 64px;
+    }
+
+    .profile-info p {
+        font-size: 24px;
+    }
+
+    .profile-form {
+        width: 55%;
+    }
+
+    .profile-logo {
+        width: 160px;
+    }
+
+    .site-title {
+        font-size: 50px;
+    }
+
+    .navbar {
+        padding: 25px 8%;
+    }
+
+    .footer {
+        padding: 60px 8%;
+    }
+}

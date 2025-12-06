@@ -1,0 +1,729 @@
+/* RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* =============================== */
+/* NAVBAR */
+/* =============================== */
+.navbar {
+    width: 100%;
+    background: #2E4A3F;
+    color: white;
+    padding: 16px 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.navbar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+/* Logo */
+.logo {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    animation: fadeIn 0.6s ease forwards;
+}
+
+.site-title {
+    font-family: 'Jomolhari';
+    font-size: clamp(20px, 5vw, 40px);
+    font-weight: 200;
+    opacity: 0;
+    animation: slideIn 0.6s ease forwards;
+    animation-delay: .15s;
+    margin-left: 10px;
+    white-space: nowrap;
+}
+
+/* USER MENU */
+.user-menu-container {
+    position: relative;
+}
+
+.user-name {
+    font-size: clamp(14px, 2vw, 18px);
+    font-weight: 500;
+    cursor: pointer;
+    padding: 8px 10px;
+    border-radius: 6px;
+    transition: background .2s, transform .25s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    opacity: 0;
+    animation: slideIn 0.6s ease forwards;
+    animation-delay: .3s;
+}
+
+.user-name:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+}
+
+.arrow {
+    width: 18px;
+    transition: transform 0.3s ease;
+}
+
+.dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    color: black;
+    width: 170px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    padding: 10px 0;
+    opacity: 0;
+    transform: translateY(-10px);
+    pointer-events: none;
+    transition: all 0.25s ease;
+    z-index: 10;
+}
+
+.dropdown.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.user-name.active .arrow {
+    transform: rotate(180deg);
+}
+
+.dropdown a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 15px;
+    text-decoration: none;
+    color: #111;
+    font-size: 16px;
+    transition: background 0.2s ease;
+}
+
+.dropdown a:hover {
+    background: #eee;
+}
+
+.dropdown a svg {
+    width: 20px;
+    height: 20px;
+    stroke: #111;
+    transition: stroke .2s ease, transform .2s ease;
+}
+
+.dropdown a:hover svg {
+    stroke: #000;
+    transform: scale(1.1);
+}
+
+/* ICONOS NAVBAR */
+.nav-icon {
+    width: 22px;
+    height: 22px;
+    stroke: white;
+    stroke-width: 1.8;
+    transition: transform .25s ease, stroke .25s ease;
+}
+
+.nav-icon:hover {
+    transform: scale(1.15);
+    stroke: #C8FFD7;
+}
+
+/* =============================== */
+/* ANIMACIONES */
+/* =============================== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.85);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+
+/* =============================== */
+/* FOOTER */
+/* =============================== */
+.footer {
+    background: #3C3C3C;
+    color: white;
+    padding: 40px 5%;
+    font-family: 'Inter';
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.footer-grid h3 {
+    font-size: clamp(16px, 2vw, 20px);
+    font-weight: 250;
+}
+
+.footer-grid li,
+.footer-grid p {
+    font-size: clamp(12px, 1.5vw, 14px);
+    font-weight: 150;
+    margin: 5px 0;
+}
+
+.footer-copy {
+    text-align: center;
+    margin-top: 25px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    background: #f4f4f4;
+}
+
+/* ===== MULTISTEP ===== */
+.step {
+    display: none;
+    animation: fade .4s ease;
+}
+
+.step.active {
+    display: block;
+}
+
+@keyframes fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+
+/* CONTENEDOR */
+.container {
+    max-width: 620px;
+    margin: 60px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 10px 20px rgba(0,0,0,.08);
+}
+
+/* EVENTO */
+.event-name {
+    background: #2E4A3F;
+    color: white;
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+/* TITULO */
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* TARJETA */
+.card {
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 15px;
+    background: #fafafa;
+}
+
+/* MIEMBROS */
+.members li {
+    margin-left: 18px;
+    margin-top: 4px;
+}
+
+/* INPUT */
+label {
+    font-weight: bold;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    margin-top: 8px;
+}
+
+input:disabled {
+    background: #eee;
+}
+
+/* BOTONES */
+.buttons {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+}
+
+.btn {
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    color: white;
+    font-weight: bold;
+}
+
+.btn:disabled {
+    background: #999 !important;
+}
+
+/* COLORES */
+.download {
+    background: #2E4A3F;
+    display: block;
+    text-align: center;
+    text-decoration: none;
+}
+
+.download.done {
+    background: #3CB371;
+}
+
+.edit {
+    background: #337ab7;
+}
+
+.save {
+    background: #3CB371;
+}
+
+.cancel {
+    background: #e74c3c;
+}
+/* =============================== */
+/* LAPTOPS PEQUEÑAS (<=1366px) */
+/* =============================== */
+@media (max-width: 1366px) {
+
+    .container {
+        max-width: 550px;
+        margin: 40px auto;
+        padding: 24px;
+    }
+
+    .site-title {
+        font-size: 28px;
+    }
+
+    .logo {
+        width: 50px;
+        height: 50px;
+    }
+
+    .event-name {
+        font-size: 15px;
+        padding: 8px;
+    }
+
+    h2 {
+        font-size: 22px;
+    }
+
+    .card {
+        padding: 14px;
+    }
+
+    input {
+        padding: 9px;
+        font-size: 14px;
+    }
+
+    .btn {
+        padding: 9px;
+        font-size: 14px;
+    }
+}
+
+/* =============================== */
+/* LAPTOPS MÁS PEQUEÑAS (<=1200px) */
+/* =============================== */
+@media (max-width: 1200px) {
+
+    .container {
+        max-width: 500px;
+    }
+
+    h2 {
+        font-size: 20px;
+    }
+
+    .site-title {
+        font-size: 24px;
+    }
+
+}
+
+/* =============================== */
+/* TABLETS (<=768px) */
+/* =============================== */
+@media (max-width: 768px) {
+
+    .navbar {
+        flex-direction: column;
+        gap: 8px;
+        padding: 12px 5%;
+    }
+
+    .hero-title {
+        font-size: clamp(20px, 8vw, 28px);
+    }
+
+    .join-layout {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+
+    .banner {
+        max-width: 100%;
+        height: 250px;
+    }
+
+    .banner h1 {
+        font-size: 42px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .members-container h2 {
+        font-size: 28px;
+    }
+
+    #membersDynamic {
+        grid-template-columns: 1fr;
+    }
+
+    .final-container {
+        max-width: 90%;
+        padding: 30px;
+    }
+
+    input, textarea, select {
+        font-size: 14px;
+    }
+
+    .btn {
+        font-size: 14px;
+        padding: 10px;
+    }
+}
+
+/* =============================== */
+/* CELULARES (<=480px) */
+/* =============================== */
+@media (max-width: 480px) {
+
+    .navbar-left {
+        justify-content: center;
+        width: 100%;
+    }
+
+    .site-title {
+        font-size: 20px;
+    }
+
+    .logo {
+        width: 40px;
+        height: 40px;
+    }
+
+    .hero-title {
+        font-size: clamp(18px, 7vw, 24px);
+        text-align: center;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    #membersDynamic {
+        grid-template-columns: 1fr;
+    }
+
+    .member-box {
+        grid-template-columns: 1fr;
+        row-gap: 12px;
+    }
+
+    .final-container {
+        padding: 20px;
+    }
+
+    input, textarea, select {
+        font-size: 13px;
+        padding: 8px;
+    }
+
+    .btn {
+        font-size: 13px;
+        padding: 8px;
+    }
+
+    .event-card img {
+        height: auto;
+    }
+}
+/* =============================== */
+/* LAPTOPS GRANDES (>=1600px) */
+/* =============================== */
+@media (min-width: 1600px) {
+    .container {
+        max-width: 720px;
+        padding: 40px;
+    }
+
+    .site-title {
+        font-size: 44px;
+    }
+
+    .banner h1 {
+        font-size: 72px;
+    }
+
+    .final-container h1 {
+        font-size: 56px;
+    }
+}
+
+/* =============================== */
+/* LAPTOPS MEDIANAS (1367px - 1600px) */
+/* =============================== */
+@media (max-width: 1600px) and (min-width: 1367px) {
+    .container {
+        max-width: 650px;
+        padding: 35px;
+    }
+
+    .site-title {
+        font-size: 36px;
+    }
+
+    .banner h1 {
+        font-size: 64px;
+    }
+
+    .final-container h1 {
+        font-size: 48px;
+    }
+}
+
+/* =============================== */
+/* LAPTOPS PEQUEÑAS (1200px - 1366px) */
+/* =============================== */
+@media (max-width: 1366px) and (min-width: 1200px) {
+    .container {
+        max-width: 550px;
+        padding: 30px;
+    }
+
+    .site-title {
+        font-size: 32px;
+    }
+
+    .banner h1 {
+        font-size: 56px;
+    }
+
+    .final-container h1 {
+        font-size: 44px;
+    }
+}
+
+/* =============================== */
+/* TABLETS (768px - 1199px) */
+/* =============================== */
+@media (max-width: 1199px) and (min-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        gap: 8px;
+        padding: 12px 5%;
+    }
+
+    .hero-title {
+        font-size: clamp(20px, 8vw, 28px);
+    }
+
+    .join-layout {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+
+    .banner h1 {
+        font-size: 42px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    #membersDynamic {
+        grid-template-columns: 1fr;
+    }
+
+    .final-container {
+        max-width: 90%;
+        padding: 30px;
+    }
+
+    input, textarea, select {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    .btn {
+        font-size: 14px;
+        padding: 10px;
+    }
+}
+
+/* =============================== */
+/* CELULARES MEDIANOS (481px - 767px) */
+/* =============================== */
+@media (max-width: 767px) and (min-width: 481px) {
+    .navbar-left {
+        justify-content: center;
+        width: 100%;
+    }
+
+    .site-title {
+        font-size: 24px;
+    }
+
+    .logo {
+        width: 50px;
+        height: 50px;
+    }
+
+    .hero-title {
+        font-size: clamp(18px, 6vw, 24px);
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    #membersDynamic {
+        grid-template-columns: 1fr;
+    }
+
+    .member-box {
+        grid-template-columns: 1fr;
+        row-gap: 12px;
+    }
+
+    .final-container {
+        padding: 20px;
+    }
+
+    input, textarea, select {
+        font-size: 13px;
+        padding: 8px;
+    }
+
+    .btn {
+        font-size: 13px;
+        padding: 8px;
+    }
+}
+
+/* =============================== */
+/* CELULARES PEQUEÑOS (<=480px) */
+/* =============================== */
+@media (max-width: 480px) {
+    .site-title {
+        font-size: 20px;
+    }
+
+    .logo {
+        width: 40px;
+        height: 40px;
+    }
+
+    .hero-title {
+        font-size: clamp(16px, 7vw, 20px);
+        text-align: center;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    #membersDynamic {
+        grid-template-columns: 1fr;
+    }
+
+    .member-box {
+        grid-template-columns: 1fr;
+        row-gap: 10px;
+    }
+
+    .final-container {
+        padding: 15px;
+    }
+
+    input, textarea, select {
+        font-size: 12px;
+        padding: 6px;
+    }
+
+    .btn {
+        font-size: 12px;
+        padding: 6px;
+    }
+
+    .event-card img {
+        height: auto;
+    }
+}

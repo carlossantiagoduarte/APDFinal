@@ -1,0 +1,511 @@
+/* RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* =============================== */
+/* NAVBAR */
+/* =============================== */
+.navbar {
+    font-family: 'Inter', sans-serif !important;
+    width: 100%;
+    background: #2E4A3F;
+    color: white;
+    padding: 16px 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.navbar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+/* Logo */
+.logo {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    animation: fadeIn 0.6s ease forwards;
+}
+
+.site-title {
+    font-family: 'Jomolhari';
+    font-size: clamp(20px, 5vw, 40px);
+    font-weight: 200;
+    opacity: 0;
+    animation: slideIn 0.6s ease forwards;
+    animation-delay: .15s;
+    margin-left: 10px;
+    white-space: nowrap;
+}
+
+/* USER MENU */
+.user-menu-container {
+    position: relative;
+}
+
+.user-name {
+    font-size: clamp(14px, 2vw, 18px);
+    font-weight: 500;
+    cursor: pointer;
+    padding: 8px 10px;
+    border-radius: 6px;
+    transition: background .2s, transform .25s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    opacity: 0;
+    animation: slideIn 0.6s ease forwards;
+    animation-delay: .3s;
+}
+
+.user-name:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+}
+
+.arrow {
+    width: 18px;
+    transition: transform 0.3s ease;
+}
+
+.dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    color: black;
+    width: 170px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    padding: 10px 0;
+    opacity: 0;
+    transform: translateY(-10px);
+    pointer-events: none;
+    transition: all 0.25s ease;
+    z-index: 10;
+}
+
+.dropdown.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.user-name.active .arrow {
+    transform: rotate(180deg);
+}
+
+.dropdown a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 15px;
+    text-decoration: none;
+    color: #111;
+    font-size: 16px;
+    transition: background 0.2s ease;
+}
+
+.dropdown a:hover {
+    background: #eee;
+}
+
+.dropdown a svg {
+    width: 20px;
+    height: 20px;
+    stroke: #111;
+    transition: stroke .2s ease, transform .2s ease;
+}
+
+.dropdown a:hover svg {
+    stroke: #000;
+    transform: scale(1.1);
+}
+
+/* ICONOS NAVBAR */
+.nav-icon {
+    width: 22px;
+    height: 22px;
+    stroke: white;
+    stroke-width: 1.8;
+    transition: transform .25s ease, stroke .25s ease;
+}
+
+.nav-icon:hover {
+    transform: scale(1.15);
+    stroke: #C8FFD7;
+}
+
+/* =============================== */
+/* ANIMACIONES */
+/* =============================== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.85);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* =============================== */
+/* HERO */
+/* =============================== */
+.hero {
+  width: 100%;
+  height: clamp(180px, 30vh, 280px);
+  background: url('../images/background-crear-evento.jpeg') center/cover no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero-title {
+  font-family: 'Kadwa';
+  font-size: clamp(20px, 7vw, 90px);
+  color: white;
+  font-weight: bold;
+  text-shadow: 0 4px 10px rgba(0,0,0,.7);
+  text-align: center;
+}
+
+/* =============================== */
+/* FORM */
+/* =============================== */
+.event {
+  padding: 30px 15px;
+}
+
+.form-container {
+  max-width: 900px;
+  margin: auto;
+  background: white;
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 5px 20px rgba(0,0,0,.15);
+  font-family: 'Inter', sans-serif;
+}
+
+.form-container h2 {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.step {
+  display: none;
+}
+
+.step.active {
+  display: block;
+}
+
+.form-row {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.form-group {
+  flex: 1;
+  min-width: 200px;
+}
+
+label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+input,
+textarea {
+  width: 100%;
+  padding: 10px 15px;
+  margin: 6px 0 16px;
+  border-radius: 8px;
+  border: 1px solid #777;
+  font-family: 'Inter', sans-serif;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 70px;
+}
+
+/* DESHABILITADO */
+input:disabled,
+textarea:disabled {
+  background: #f0f0f0;
+  color: #777;
+  border: 1px dashed #999;
+  cursor: not-allowed;
+}
+
+input.editable,
+textarea.editable {
+  border: 1px solid #2E4A3F;
+  background: white;
+}
+
+/* =============================== */
+/* BOTONES */
+/* =============================== */
+.buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+button {
+  background: #2E4A3F;
+  color: white;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: .2s;
+  font-family: 'Inter', sans-serif;
+}
+
+button:hover {
+  background: #3C6B57;
+}
+
+/* BOTÓN EDITAR y GUARDAR */
+#editarBtn{
+    background: #2F4A6D;
+}
+
+#editarBtn:hover{
+    background: #3E628C;
+}
+/* BOTÓN ELIMINAR */
+#eliminarBtn {
+  background: #9b2c28;
+}
+
+#eliminarBtn:hover {
+  background: #c0392b;
+}
+
+/* =============================== */
+/* FOOTER */
+/* =============================== */
+.footer {
+    background: #3C3C3C;
+    color: white;
+    padding: 40px 5%;
+    font-family: 'Inter';
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.footer-grid h3 {
+    font-size: clamp(16px, 2vw, 20px);
+    font-weight: 250;
+}
+
+.footer-grid li,
+.footer-grid p {
+    font-size: clamp(12px, 1.5vw, 14px);
+    font-weight: 150;
+    margin: 5px 0;
+}
+
+.footer-copy {
+    text-align: center;
+    margin-top: 25px;
+}
+/* =============================== */
+/* RESPONSIVE */
+/* =============================== */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+
+  .navbar-left {
+    justify-content: center;
+  }
+
+  .buttons {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 400px) {
+  .hero-title {
+    font-size: 26px;
+  }
+
+  .form-container {
+    padding: 15px;
+  }
+}
+
+/* ================================
+   PANTALLAS MUY GRANDES (4K)
+================================ */
+@media (min-width: 1700px) {
+
+  .hero-title {
+    font-size: 110px;
+  }
+
+  .form-container {
+    max-width: 1100px;
+    padding: 40px;
+  }
+
+  input, textarea {
+    font-size: 16px;
+  }
+
+  button {
+    padding: 14px 32px;
+    font-size: 18px;
+  }
+}
+
+
+/* ================================
+   LAPTOPS GRANDES
+================================ */
+@media (max-width: 1400px) {
+
+  .hero-title {
+    font-size: 85px;
+  }
+
+  .form-container {
+    max-width: 850px;
+  }
+}
+
+
+/* ================================
+   LAPTOPS MEDIANOS
+================================ */
+@media (max-width: 1200px) {
+
+  .hero {
+    height: 240px;
+  }
+
+  .hero-title {
+    font-size: 72px;
+  }
+
+  .form-container {
+    max-width: 780px;
+  }
+}
+
+
+/* ================================
+   TABLETS HORIZONTALES
+================================ */
+@media (max-width: 992px) {
+
+  .hero-title {
+    font-size: 62px;
+  }
+
+  .form-container {
+    max-width: 720px;
+    padding: 25px;
+  }
+}
+
+
+/* ================================
+   TABLETS / CELULARES GRANDES
+================================ */
+@media (max-width: 768px) {
+
+  .hero {
+    height: 200px;
+  }
+
+  .hero-title {
+    font-size: 48px;
+  }
+
+  .form-row {
+    gap: 10px;
+  }
+}
+
+
+/* ================================
+   CELULARES
+================================ */
+@media (max-width: 480px) {
+
+  .hero {
+    height: 160px;
+  }
+
+  .hero-title {
+    font-size: 34px;
+  }
+
+  h2 {
+    font-size: 20px;
+  }
+
+  input, textarea {
+    font-size: 13px;
+    padding: 9px 12px;
+  }
+
+  button {
+    font-size: 14px;
+  }
+}
+
+
+/* ================================
+   CELULARES PEQUEÑOS
+================================ */
+@media (max-width: 360px) {
+
+  .hero-title {
+    font-size: 28px;
+  }
+
+  button {
+    font-size: 13px;
+    padding: 9px 16px;
+  }
+}

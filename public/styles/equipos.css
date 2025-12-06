@@ -1,0 +1,561 @@
+/* RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* =============================== */
+/* NAVBAR */
+/* =============================== */
+.navbar {
+    width: 100%;
+    background: #2E4A3F;
+    color: white;
+    padding: 16px 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.navbar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+/* Logo */
+.logo {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    animation: fadeIn 0.6s ease forwards;
+}
+
+.site-title {
+    font-family: 'Jomolhari';
+    font-size: clamp(20px, 5vw, 40px);
+    font-weight: 200;
+    opacity: 0;
+    animation: slideIn 0.6s ease forwards;
+    animation-delay: .15s;
+    margin-left: 10px;
+    white-space: nowrap;
+}
+
+/* USER MENU */
+.user-menu-container {
+    position: relative;
+}
+
+.user-name {
+    font-size: clamp(14px, 2vw, 18px);
+    font-weight: 500;
+    cursor: pointer;
+    padding: 8px 10px;
+    border-radius: 6px;
+    transition: background .2s, transform .25s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    opacity: 0;
+    animation: slideIn 0.6s ease forwards;
+    animation-delay: .3s;
+}
+
+.user-name:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+}
+
+.arrow {
+    width: 18px;
+    transition: transform 0.3s ease;
+}
+
+.dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    color: black;
+    width: 170px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    padding: 10px 0;
+    opacity: 0;
+    transform: translateY(-10px);
+    pointer-events: none;
+    transition: all 0.25s ease;
+    z-index: 10;
+}
+
+.dropdown.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.user-name.active .arrow {
+    transform: rotate(180deg);
+}
+
+.dropdown a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 15px;
+    text-decoration: none;
+    color: #111;
+    font-size: 16px;
+    transition: background 0.2s ease;
+}
+
+.dropdown a:hover {
+    background: #eee;
+}
+
+.dropdown a svg {
+    width: 20px;
+    height: 20px;
+    stroke: #111;
+    transition: stroke .2s ease, transform .2s ease;
+}
+
+.dropdown a:hover svg {
+    stroke: #000;
+    transform: scale(1.1);
+}
+
+/* ICONOS NAVBAR */
+.nav-icon {
+    width: 22px;
+    height: 22px;
+    stroke: white;
+    stroke-width: 1.8;
+    transition: transform .25s ease, stroke .25s ease;
+}
+
+.nav-icon:hover {
+    transform: scale(1.15);
+    stroke: #C8FFD7;
+}
+
+/* =============================== */
+/* ANIMACIONES */
+/* =============================== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.85);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+
+/* =============================== */
+/* FOOTER */
+/* =============================== */
+.footer {
+    background: #3C3C3C;
+    color: white;
+    padding: 40px 5%;
+    font-family: 'Inter';
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.footer-grid h3 {
+    font-size: clamp(16px, 2vw, 20px);
+    font-weight: 250;
+}
+
+.footer-grid li,
+.footer-grid p {
+    font-size: clamp(12px, 1.5vw, 14px);
+    font-weight: 150;
+    margin: 5px 0;
+}
+
+.footer-copy {
+    text-align: center;
+    margin-top: 25px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    background: #f4f4f4;
+}
+
+/* ===== MULTISTEP ===== */
+.step {
+    display: none;
+    animation: fade .4s ease;
+}
+
+.step.active {
+    display: block;
+}
+
+@keyframes fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* TABLA */
+table {
+    width: 100%;
+    max-width: 900px;
+    margin: auto;
+    border-collapse: collapse;
+    background: white;
+    box-shadow: 0 4px 8px rgba(0,0,0,.1);
+}
+
+th {
+    background: #2E4A3F;
+    color: white;
+}
+
+th, td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+}
+
+tr:hover {
+    background: #f1f1f1;
+}
+
+/* BOTONES */
+button {
+    background: #357a63;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #285f4c;
+}
+
+/* FOOTER CONTROLS */
+.footer-controls {
+    max-width: 900px;
+    margin: auto;
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* PAGINACIÓN */
+#paginacion button {
+    background: #ddd;
+    color: #222;
+    margin-right: 4px;
+}
+
+#paginacion .active {
+    background: #2E4A3F;
+    color: white;
+}
+
+/* SUBIR ARCHIVO */
+#subirArchivo {
+    text-align: right;
+}
+
+#nombreArchivo {
+    font-size: 12px;
+    margin-top: 6px;
+    color: #555;
+}
+/* =============================== */
+/* RESPONSIVE DESIGN */
+/* =============================== */
+
+/* ---------- LAPTOPS MEDIANAS (1366px) ---------- */
+@media (max-width: 1366px) {
+    table {
+        font-size: 14px;
+    }
+
+    .footer-controls {
+        padding: 0 10px;
+    }
+
+    button {
+        padding: 6px 10px;
+        font-size: 14px;
+    }
+}
+
+
+/* ---------- TABLETS (1024px) ---------- */
+@media (max-width: 1024px) {
+
+    /* NAVBAR */
+    .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .navbar-left {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .site-title {
+        font-size: 28px;
+    }
+
+    /* TABLA */
+    table {
+        font-size: 13px;
+        width: 100%;
+        overflow-x: auto;
+        display: block;
+    }
+
+    th, td {
+        padding: 10px;
+        white-space: nowrap;
+    }
+
+    /* FOOTER CONTROLS */
+    .footer-controls {
+        flex-direction: column;
+        gap: 10px;
+        align-items: stretch;
+    }
+
+    #subirArchivo {
+        text-align: left;
+    }
+
+    #paginacion {
+        text-align: center;
+    }
+}
+
+
+/* ---------- CELULARES GRANDES (768px) ---------- */
+@media (max-width: 768px) {
+
+    body {
+        padding: 0;
+    }
+
+    /* NAVBAR */
+    .logo {
+        width: 50px;
+        height: 50px;
+    }
+
+    .site-title {
+        font-size: 22px;
+    }
+
+    .user-name {
+        font-size: 14px;
+    }
+
+    /* TABLA CON SCROLL */
+    table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    th, td {
+        font-size: 12px;
+        padding: 8px;
+    }
+
+    /* BOTONES */
+    button {
+        font-size: 13px;
+        padding: 6px 10px;
+    }
+
+    /* FOOTER */
+    .footer-grid {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+}
+
+
+/* ---------- CELULARES PEQUEÑOS (480px) ---------- */
+@media (max-width: 480px) {
+
+    /* NAVBAR */
+    .navbar {
+        padding: 12px 4%;
+    }
+
+    .site-title {
+        font-size: 18px;
+    }
+
+    .user-name {
+        font-size: 13px;
+    }
+
+    /* TABLA */
+    th, td {
+        font-size: 11px;
+        padding: 6px;
+    }
+
+    /* FOOTER */
+    .footer {
+        padding: 25px 4%;
+    }
+
+    .footer-grid h3 {
+        font-size: 15px;
+    }
+
+    .footer-grid p,
+    .footer-grid li {
+        font-size: 12px;
+    }
+
+}
+
+
+/* ---------- CELULARES MUY CHICOS (360px) ---------- */
+@media (max-width: 360px) {
+
+    .site-title {
+        font-size: 16px;
+    }
+
+    button {
+        width: 100%;
+    }
+
+    #paginacion button {
+        margin-top: 5px;
+        width: auto;
+    }
+}
+/* =============================== */
+/* LAPTOPS PEQUEÑAS */
+/* =============================== */
+
+/* ---- laptops 13 pulgadas (1280px) ---- */
+@media (max-width: 1280px) {
+
+    .site-title {
+        font-size: 28px;
+    }
+
+    table {
+        max-width: 100%;
+        font-size: 14px;
+    }
+
+    th, td {
+        padding: 10px;
+    }
+
+    .footer-controls {
+        padding: 0 12px;
+    }
+
+    button {
+        font-size: 13.5px;
+    }
+}
+
+
+/* ---- laptops 12 pulgadas (1150px) ---- */
+@media (max-width: 1150px) {
+
+    .site-title {
+        font-size: 25px;
+    }
+
+    .navbar {
+        padding: 14px 4%;
+    }
+
+    table {
+        font-size: 13px;
+    }
+
+    th, td {
+        padding: 8px;
+    }
+
+    button {
+        padding: 6px 10px;
+    }
+
+    .footer-controls {
+        gap: 8px;
+    }
+
+}
+
+
+/* ---- netbooks y laptops viejitas (1024px landscape) ---- */
+@media (max-width: 1024px) and (orientation: landscape) {
+
+    .site-title {
+        font-size: 22px;
+    }
+
+    th, td {
+        font-size: 12px;
+    }
+
+    table {
+        overflow-x: auto;
+        display: block;
+    }
+
+}

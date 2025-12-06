@@ -1,0 +1,716 @@
+/* RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* =============================== */
+/* NAVBAR */
+/* =============================== */
+.navbar {
+    width: 100%;
+    background: #2E4A3F;
+    color: white;
+    padding: 16px 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.navbar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+/* Logo */
+.logo {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    animation: fadeIn 0.6s ease forwards;
+}
+
+.site-title {
+    font-family: 'Jomolhari';
+    font-size: clamp(20px, 5vw, 40px);
+    font-weight: 200;
+    opacity: 0;
+    animation: slideIn 0.6s ease forwards;
+    animation-delay: .15s;
+    margin-left: 10px;
+    white-space: nowrap;
+}
+
+/* USER MENU */
+.user-menu-container {
+    position: relative;
+}
+
+.user-name {
+    font-size: clamp(14px, 2vw, 18px);
+    font-weight: 500;
+    cursor: pointer;
+    padding: 8px 10px;
+    border-radius: 6px;
+    transition: background .2s, transform .25s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    opacity: 0;
+    animation: slideIn 0.6s ease forwards;
+    animation-delay: .3s;
+}
+
+.user-name:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+}
+
+.arrow {
+    width: 18px;
+    transition: transform 0.3s ease;
+}
+
+.dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    color: black;
+    width: 170px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    padding: 10px 0;
+    opacity: 0;
+    transform: translateY(-10px);
+    pointer-events: none;
+    transition: all 0.25s ease;
+    z-index: 10;
+}
+
+.dropdown.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.user-name.active .arrow {
+    transform: rotate(180deg);
+}
+
+.dropdown a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 15px;
+    text-decoration: none;
+    color: #111;
+    font-size: 16px;
+    transition: background 0.2s ease;
+}
+
+.dropdown a:hover {
+    background: #eee;
+}
+
+.dropdown a svg {
+    width: 20px;
+    height: 20px;
+    stroke: #111;
+    transition: stroke .2s ease, transform .2s ease;
+}
+
+.dropdown a:hover svg {
+    stroke: #000;
+    transform: scale(1.1);
+}
+
+/* ICONOS NAVBAR */
+.nav-icon {
+    width: 22px;
+    height: 22px;
+    stroke: white;
+    stroke-width: 1.8;
+    transition: transform .25s ease, stroke .25s ease;
+}
+
+.nav-icon:hover {
+    transform: scale(1.15);
+    stroke: #C8FFD7;
+}
+
+/* =============================== */
+/* ANIMACIONES */
+/* =============================== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.85);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* =============================== */
+/* LAYOUT PRINCIPAL */
+/* =============================== */
+.join-layout{
+    
+    font-family: 'Inter', sans-serif !important;
+    display:grid;
+    grid-template-columns:1fr 1.2fr;
+    height:calc(100vh - 72px);
+}
+
+/* =============================== */
+/* PANEL IZQUIERDO */
+/* =============================== */
+.banner{
+    
+    background:url("../images/background-crear-evento.jpeg") center/cover no-repeat;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    max-width: 500px;    
+    font-family: 'Inter', sans-serif !important;
+}
+
+.banner h1{
+    font-family: 'Inter', sans-serif !important;
+    color:white;
+    font-size:64px;
+    text-shadow:0 5px 12px rgba(0,0,0,.7);
+    text-align:center;
+}
+
+/* =============================== */
+/* FOOTER */
+/* =============================== */
+.footer {
+    background: #3C3C3C;
+    color: white;
+    padding: 40px 5%;
+    font-family: 'Inter';
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.footer-grid h3 {
+    font-size: clamp(16px, 2vw, 20px);
+    font-weight: 250;
+}
+
+.footer-grid li,
+.footer-grid p {
+    font-size: clamp(12px, 1.5vw, 14px);
+    font-weight: 150;
+    margin: 5px 0;
+}
+
+.footer-copy {
+    text-align: center;
+    margin-top: 25px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    background: #f4f4f4;
+}
+
+/* ===== MULTISTEP ===== */
+.step {
+    display: none;
+    animation: fade .4s ease;
+}
+
+.step.active {
+    display: block;
+}
+
+@keyframes fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* ===== SECCIÓN 1 ===== */
+.form-header-img {
+    height: 300px;
+    background: url("https://images.unsplash.com/photo-1515378791036-0648a3ef77b2")
+        center/cover no-repeat;
+}
+
+.form-container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 30px;
+}
+
+.title {
+    font-family: "Kadwa";
+    font-size: 42px;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: 30px;
+}
+
+/* === Event Card === */
+.event-card {
+    background: white;
+    padding: 15px;
+    box-shadow: 0 3px 10px rgba(0,0,0,.1);
+    border-radius: 12px;
+}
+
+.event-card img {
+    width: 100%;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+/* ===== FORMULARIO ===== */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+input, textarea, select {
+    padding: 10px;
+    border: 1px solid #bbb;
+    border-radius: 6px;
+}
+
+textarea {
+    height: 80px;
+    resize: vertical;
+}
+
+.btn-primary {
+    background: #6a4029;
+    color: white;
+    padding: 12px;
+    border: none;
+    margin-top: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.btn-secondary {
+    background: #888;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.btn-primary:hover {
+    background: #55311f;
+}
+
+/* ==================== */
+/* ===== SECCIÓN 2 ===== */
+/* ==================== */
+
+.header-banner {
+    background: url("https://images.unsplash.com/photo-1553877522-43269d4ea984") center/cover no-repeat;
+    height: 180px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 86px;
+    font-family: "Kadwa";
+    color: white;
+    text-shadow: 0 4px 10px rgba(0,0,0,.6);
+    font-weight: 800;
+}
+
+.members-container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 30px;
+}
+
+.members-container h2 {
+    text-align: center;
+    font-size: 36px;
+    margin-bottom: 20px;
+}
+
+#membersDynamic {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+    gap: 25px;
+}
+
+.member-box {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.1);
+}
+
+.member-box h4 {
+    margin-bottom: 10px;
+}
+
+.buttons-row {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 25px;
+}
+
+/* ==================== */
+/* ===== SECCIÓN 3 ===== */
+/* ==================== */
+
+.final-container {
+    max-width: 700px;
+    margin: 40px auto;
+    text-align: center;
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 3px 12px rgba(0,0,0,.15);
+}
+
+.final-container h1 {
+    font-size: 48px;
+    font-family: "Kadwa";
+}
+
+.invite-box {
+    margin: 30px auto;
+    padding: 25px;
+    background: #fefae6;
+    border: 2px dashed #bca76a;
+    border-radius: 12px;
+}
+
+#inviteCode {
+    font-size: 32px;
+    margin-top: 10px;
+    letter-spacing: 3px;
+}
+
+.btn-copy {
+    background: #6a4029;
+    color: white;
+    padding: 8px 20px;
+    border-radius: 8px;
+    margin-top: 12px;
+    border: none;
+    cursor: pointer;
+}/* ===== DISEÑO FORMULARIO DE MIEMBROS ===== */
+
+#membersDynamic {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+    gap: 25px;
+}
+
+.member-box {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.1);
+
+    display: grid;
+    grid-template-columns: 170px 1fr;
+    row-gap: 18px;
+    column-gap: 20px;
+    align-items: center;
+}
+
+.member-box h3 {
+    grid-column: span 2;
+    margin-bottom: 10px;
+}
+
+/* Etiquetas alineadas a la izquierda */
+.member-label {
+    font-weight: 600;
+    text-align: left;
+    font-size: 15px;
+}
+
+/* Inputs */
+.member-input input {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #cfcfcf;
+    background: #fafafa;
+}
+/* ================================= */
+/* 1) MONITORES GRANDES (1400px +) */
+/* ================================= */
+@media (min-width: 1400px) {
+    .join-layout {
+        max-width: 1400px;
+        margin: auto;
+        grid-template-columns: 1fr 1.3fr;
+    }
+
+    .banner h1 {
+        font-size: 72px;
+    }
+
+    .title {
+        font-size: 48px;
+    }
+}
+
+/* ================================= */
+/* 2) LAPTOP MEDIANA (1200px) */
+/* ================================= */
+@media (max-width: 1200px) {
+
+    .join-layout {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+
+    .banner {
+        max-width: 100%;
+        height: 260px;
+    }
+
+    .banner h1 {
+        font-size: 44px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .header-banner {
+        font-size: 54px;
+    }
+}
+
+/* ================================= */
+/* 3) LAPTOP PEQUEÑA (1024px) */
+/* ================================= */
+@media (max-width: 1024px) {
+
+    .navbar {
+        padding: 14px 4%;
+    }
+
+    .logo {
+        width: 52px;
+        height: 52px;
+    }
+
+    .site-title {
+        font-size: 26px;
+    }
+
+    .title {
+        font-size: 36px;
+    }
+
+    .member-box {
+        grid-template-columns: 1fr;
+    }
+
+    .member-label {
+        text-align: left;
+    }
+}
+
+/* ================================= */
+/* 4) TABLET (768px) */
+/* ================================= */
+@media (max-width: 768px) {
+
+    .navbar {
+        flex-direction: column;
+        gap: 12px;
+        padding: 14px;
+        text-align: center;
+    }
+
+    .user-menu-container {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+
+    .join-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .banner {
+        height: 220px;
+    }
+
+    .banner h1 {
+        font-size: 36px;
+    }
+
+    .header-banner {
+        height: 150px;
+        font-size: 36px;
+    }
+
+    #membersDynamic {
+        grid-template-columns: 1fr;
+    }
+
+    .buttons-row {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .final-container h1 {
+        font-size: 34px;
+    }
+
+    #inviteCode {
+        font-size: 26px;
+    }
+}
+
+/* ================================= */
+/* 5) CELULAR GRANDE (600px) */
+/* ================================= */
+@media (max-width: 600px) {
+
+    .site-title {
+        font-size: 20px;
+    }
+
+    .banner {
+        height: 180px;
+    }
+
+    .banner h1 {
+        font-size: 28px;
+    }
+
+    .title {
+        font-size: 28px;
+    }
+
+    .final-container {
+        padding: 25px;
+    }
+
+    .member-box {
+        padding: 18px;
+    }
+
+    .member-label {
+        font-size: 14px;
+    }
+
+    .member-input input {
+        font-size: 14px;
+        padding: 8px;
+    }
+
+    #inviteCode {
+        font-size: 22px;
+        letter-spacing: 2px;
+    }
+}
+
+/* ================================= */
+/* 6) CELULAR PEQUEÑO (420px) */
+/* ================================= */
+@media (max-width: 420px) {
+
+    .navbar-left {
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .logo {
+        width: 42px;
+        height: 42px;
+    }
+
+    .site-title {
+        font-size: 18px;
+        margin-left: 0;
+    }
+
+    .banner {
+        height: 150px;
+    }
+
+    .banner h1 {
+        font-size: 22px;
+    }
+
+    .header-banner {
+        font-size: 26px;
+        height: 120px;
+    }
+
+    .final-container h1 {
+        font-size: 28px;
+    }
+
+}
+
+/* ================================= */
+/* 7) CELULARES MUY PEQUEÑOS (350px) */
+/* ================================= */
+@media (max-width: 350px) {
+
+    .banner h1 {
+        font-size: 20px;
+    }
+
+    .final-container h1 {
+        font-size: 24px;
+    }
+
+    .member-input input {
+        font-size: 13px;
+    }
+
+    #inviteCode {
+        font-size: 18px;
+    }
+}

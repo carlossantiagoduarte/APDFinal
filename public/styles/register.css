@@ -1,0 +1,290 @@
+/* ================================
+   RESET + FONDO
+================================ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: url('../images/background-login.jpeg') no-repeat center center;
+    background-size: cover;
+    min-height: 100dvh;
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+}
+
+/* ================================
+   FLECHA RETROCEDER
+================================ */
+.register-back-arrow {
+    position: absolute;
+    top: 40px;
+    left: 40px;
+    font-size: 120px;
+    color: white;
+    text-decoration: none;
+    z-index: 10;
+}
+
+/* ================================
+   CONTENEDOR PRINCIPAL
+================================ */
+.register-container {
+    width: 100%;
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 80px;
+    gap: 40px;
+}
+
+/* ================================
+   TEXTOS
+================================ */
+.register-info h1 {
+    font-family: 'Kadwa';
+    font-size: 110px;
+    color: white;
+    font-weight: 800;
+}
+
+.register-info p {
+    font-family: 'Jomolhari';
+    font-size: 38px;
+    color: white;
+    margin-top: 10px;
+}
+
+/* ================================
+   FORMULARIO
+================================ */
+.register-form-box {
+    margin-right: 10%;
+    width: 430px;
+    background: rgba(255, 255, 255, 0.18);
+    padding: 40px;
+    border-radius: 30px;
+    text-align: center;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, .2);
+}
+
+.register-logo {
+    width: 140px;
+    margin-bottom: 20px;
+    border-radius: 50%;
+}
+
+.register-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.register-form label {
+    font-size: 14px;
+    text-align: left;
+    font-weight: 300;
+}
+
+.register-form input {
+    padding: 12px;
+    border-radius: 18px;
+    border: none;
+    outline: none;
+    font-size: 14px;
+}
+
+/* ================================
+   BOTÓN REGISTRAR
+================================ */
+.register-btn {
+    margin-top: 6px;
+    padding: 12px;
+    width: 100%;
+    background: #B7A593;
+    color: white;
+    font-size: 16px;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+    transition: transform .1s ease;
+}
+
+.register-btn:active {
+    transform: scale(.98);
+}
+
+/* ================================
+   FOOTER
+================================ */
+.register-footer {
+    font-size: 13px;
+    margin-top: 15px;
+    color: #000;
+}/* ================================
+   RESPONSIVE COMPLETO (LAPTOP - TABLET - MÓVIL)
+================================ */
+
+/* LAPTOP GRANDES */
+@media (max-width: 1400px) {
+    .register-info h1 {
+        font-size: 95px;
+    }
+
+    .register-info p {
+        font-size: 34px;
+    }
+
+    .register-form-box {
+        width: 400px;
+        margin-right: 5%;
+    }
+}
+
+
+/* LAPTOP MEDIANAS */
+@media (max-width: 1200px) {
+    .register-container {
+        padding: 0 50px;
+    }
+
+    .register-info h1 {
+        font-size: 82px;
+    }
+
+    .register-info p {
+        font-size: 30px;
+    }
+
+    .register-form-box {
+        width: 380px;
+        margin-right: 0;
+    }
+}
+
+
+/* TABLET HORIZONTAL */
+@media (max-width: 992px) {
+    .register-container {
+        flex-direction: column;
+        justify-content: center;
+        padding: 40px;
+    }
+
+    .register-info h1 {
+        font-size: 70px;
+    }
+
+    .register-info p {
+        font-size: 26px;
+    }
+
+    .register-back-arrow {
+        font-size: 80px;
+        top: 25px;
+        left: 25px;
+    }
+}
+
+
+/* TABLET VERTICAL */
+@media (max-width: 768px) {
+
+    .register-info h1 {
+        font-size: 60px;
+    }
+
+    .register-info p {
+        font-size: 22px;
+    }
+
+    .register-form-box {
+        width: 340px;
+    }
+}
+
+
+/* CELULARES GRANDES */
+@media (max-width: 600px) {
+
+    .register-container {
+        padding: 20px;
+    }
+
+    .register-info h1 {
+        font-size: 52px;
+    }
+
+    .register-info p {
+        font-size: 20px;
+    }
+
+    .register-back-arrow {
+        font-size: 65px;
+    }
+}
+
+
+/* CELULARES MEDIANOS */
+@media (max-width: 480px) {
+
+    .register-info h1 {
+        font-size: 45px;
+    }
+
+    .register-info p {
+        font-size: 18px;
+    }
+
+    .register-form-box {
+        width: 300px;
+    }
+
+    .register-logo {
+        width: 105px;
+    }
+
+    .register-back-arrow {
+        font-size: 55px;
+    }
+}
+
+
+/* CELULARES PEQUEÑOS */
+@media (max-width: 360px) {
+
+    .register-info h1 {
+        font-size: 38px;
+    }
+
+    .register-info p {
+        font-size: 16px;
+    }
+
+    .register-form-box {
+        width: 260px;
+    }
+
+    .register-back-arrow {
+        font-size: 48px;
+    }
+}
+
+
+/* MINI */
+@media (max-width: 320px) {
+
+    .register-info h1 {
+        font-size: 32px;
+    }
+
+    .register-form-box {
+        width: 230px;
+    }
+}
