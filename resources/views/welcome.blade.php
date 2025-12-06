@@ -115,7 +115,7 @@
 
     @else
         <!-- Si no está autenticado -->
-        <a href="{{ route('iniciarsesion') }}">Iniciar sesión</a>
+        <a href="{{ route('login') }}">Iniciar sesión</a>
         <a href="{{ route('registrarusuario') }}">Registrarse</a>
     @endif
 </div>
