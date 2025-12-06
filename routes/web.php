@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\RegisterUserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 
@@ -48,6 +49,9 @@ Route::get('/dashboard', function () {
 Route::get('/Registrar-Usuario', function () {
     return view('RegistrarUsuario');
 })->name('registrarusuario');
+
+Route::get('/Registrar-Usuario', [RegisterUserController::class, 'showRegisterForm'])->name('registrarusuario');
+Route::post('/Registrar-Usuario', [RegisterUserController::class, 'register'])->name('registrarusuario.post');
 
 
 Route::get('/crear-evento', function () {
