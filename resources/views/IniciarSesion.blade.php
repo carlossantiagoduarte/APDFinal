@@ -28,26 +28,23 @@
 
                 <h2>Iniciar sesión</h2>
 
-                <form>
-                    <label>Correo Electrónico:</label>
-                    <input type="email" placeholder="example@gmail.com">
+                <form method="POST" action="{{ route('iniciarsesion.post') }}">
+    @csrf
+    <label>Correo Electrónico:</label>
+    <input type="email" name="email" placeholder="example@gmail.com" required>
 
-                    <label>Contraseña:</label>
-                    <input type="password" placeholder="••••••••">
+    <label>Contraseña:</label>
+    <input type="password" name="password" placeholder="••••••••" required>
 
-                    <button class="btn-login">Iniciar sesión</button>
+    @if($errors->any())
+        <div class="error-message">
+            <p>{{ $errors->first('error') }}</p>
+        </div>
+    @endif
 
-                    <div class="divider">Ó</div>
+    <button type="submit" class="btn-login">Iniciar sesión</button>
+</form>
 
-                    <button class="btn-google">
-                        <img src="images/logo-google.jpeg" class="icon">
-                        Sign up with Google
-                    </button>
-
-                    <button class="btn-qr">
-                        <img src="images/logo-facebook.png" class="icon">
-                        Sign up with Facebook
-                    </button>
 
 
                     <p class="register">
