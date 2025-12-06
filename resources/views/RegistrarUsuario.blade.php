@@ -16,8 +16,6 @@
 </head>
 
 <body>
-    <!-- FLECHA DE REGRESO -->
-    <a href="{{ route('login') }}" class="register-back-arrow">←</a>
 
     <!-- CONTENEDOR PRINCIPAL -->
     <div class="register-container">
@@ -32,24 +30,25 @@
         <div class="register-form-box">
             <img src="{{ asset('images/logo.png') }}" class="register-logo" alt="Logo">
 
-            <form class="register-form">
+            <form class="register-form" action="{{ route('registrarusuario.post') }}" method="POST">
+                @csrf
                 <label>Nombre:</label>
-                <input type="text">
+                <input type="text" name="nombre" required>
 
                 <label>Apellido:</label>
-                <input type="text">
+                <input type="text" name="apellido" required>
 
                 <label>Correo Electrónico:</label>
-                <input type="email" placeholder="example@gmail.com">
+                <input type="email" name="email" placeholder="example@gmail.com" required>
 
                 <label>Número de celular:</label>
-                <input type="tel" placeholder="Ej. 951 123 4567">
+                <input type="tel" name="telefono" placeholder="Ej. 951 123 4567" required>
 
                 <label>Contraseña:</label>
-                <input type="password" placeholder="********">
+                <input type="password" name="password" placeholder="********" required>
 
                 <label>Confirmar Contraseña:</label>
-                <input type="password" placeholder="********">
+                <input type="password" name="password_confirmation" placeholder="********" required>
 
                 <button type="submit" class="register-btn">Registrarte</button>
             </form>
