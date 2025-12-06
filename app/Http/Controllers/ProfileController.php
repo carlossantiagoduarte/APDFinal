@@ -5,43 +5,50 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class ProfileController extends Controller
 {
-    // 1. Mostrar la vista de editar perfil
+    // Mostrar la vista de editar perfil
     public function edit()
     {
-        // Aquí podrías validar roles si cada uno tiene una vista distinta, 
-        // pero si comparten la misma vista, solo retornas la vista:
-        return view('EditarPerfil'); 
+        // Asegúrate de que tu archivo blade se llame 'editarperfil.blade.php' 
+        // y esté en la carpeta resources/views/
+        return view('editarperfil'); 
     }
 
-    // 2. Guardar los cambios (Universal)
+    // Guardar los cambios
     public function update(Request $request)
     {
-        $user = Auth::user(); // <--- ESTA ES LA CLAVE: Agarra al usuario actual, sea quien sea.
+        $user = Auth::user();
 
-        // Validaciones
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'lastname' => 'nullable|string|max:255',
-            'email' => 'required|email|max:255|unique:users,email,' . $user->id,
-            'phone' => 'nullable|string|max:20',
-            'password' => 'nullable|min:6|confirmed',
+        // 1. Validar los datos
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'lastname' => ['nullable', 'string', 'max:255'],
+            'email' => [
+                'required', 'string', 'email', 'max:255',
+                Rule::unique('users')->ignore($user->id), // Ignorar su propio email al verificar duplicados
+            ],
+            'phone' => ['nullable', 'string', 'max:20'],
+            'password' => ['nullable', 'string', 'min:8', 'confirmed'], // 'confirmed' busca password_confirmation
         ]);
 
-        // Actualizar datos
-        $user->name = $request->name;
-        $user->lastname = $request->lastname;
-        $user->email = $request->email;
-        $user->phone = $request->phone;
+        // 2. Actualizar datos básicos
+        $user->name = $validated['name'];
+        $user->lastname = $validated['lastname'];
+        $user->email = $validated['email'];
+        $user->phone = $validated['phone'];
 
+        // 3. Actualizar contraseña SOLO si el usuario escribió algo
         if ($request->filled('password')) {
-            $user->password = Hash::make($request->password);
+            $user->password = Hash::make($validated['password']);
         }
 
+        // 4. Guardar en BD
         $user->save();
 
-        return back()->with('success', '¡Perfil actualizado correctamente!');
+        // 5. Redirigir con mensaje de éxito
+        return redirect()->route('editarperfil')->with('success', 'Perfil actualizado correctamente.');
     }
 }
