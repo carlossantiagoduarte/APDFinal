@@ -27,7 +27,7 @@ class Team extends Model
         'skills_needed',
         'project_name',
         'project_file_path',
-
+        
     ];
 
     // Relación 1: El creador del equipo (Líder principal)
