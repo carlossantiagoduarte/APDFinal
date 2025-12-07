@@ -5,18 +5,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard | CodeVision</title>
- <link rel="stylesheet" href="{{ asset('styles/dashboard.css') }}">
-
-    <link rel="icon" type="../image/png" href="images/logo.png">
+    
+    <link rel="stylesheet" href="{{ asset('styles/dashboard.css') }}">
+    <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
+    
     <link href="https://fonts.googleapis.com/css2?family=Jomolhari&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Jomolhari&family=Kadwa:wght@400;700&display=swap"
-        rel="stylesheet">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Jomolhari&family=Kadwa:wght@400;700&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Jomolhari&family=Kadwa:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
 
-
-    <!-- SCRIPT DROPDOWN -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const toggle = document.getElementById("user-toggle");
@@ -39,38 +35,29 @@
 
 <body>
 
-    <!-- NAVBAR -->
     <nav class="navbar">
-
         <div class="navbar-left">
-            <!-- LOGO -->
-            <img src="../images/logo.png" class="logo">
+            <img src="{{ asset('images/logo.png') }}" class="logo" alt="CodeVision Logo">
             <span class="site-title">CodeVision</span>
         </div>
 
         <div class="user-menu-container">
-
             <div id="user-toggle" class="user-name">
-    {{ auth()->user()->name }} <!-- Mostrar nombre del usuario desde la base de datos -->
-
-                <!-- FLECHITA -->
-                <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
+                {{ Auth::user()->name }} {{ Auth::user()->lastname ?? '' }}
+                <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="6 9 12 15 18 9" />
                 </svg>
             </div>
 
-            <!-- MENU -->
             <div id="user-menu" class="dropdown">
-
                 <a href="{{ route('dashboard.juez') }}">
-    <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M3 9.5L12 3l9 6.5V21H3z" />
-    </svg>
-    Inicio
-</a>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 9.5L12 3l9 6.5V21H3z" />
+                    </svg>
+                    Inicio
+                </a>
 
-
+                
                 <a href="{{ route('editarperfil') }}">
     <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="7" r="4" />
@@ -79,12 +66,10 @@
     Perfil
 </a>
 
-
-                <!-- Formulario de Logout -->
-                <form action="{{ route('logout') }}" method="POST" style="display: inline;">
-                    @csrf <!-- Asegura que la solicitud sea segura con un token CSRF -->
-                    <a href="#" class="btn-search" onclick="this.closest('form').submit();" style="color: black; background-color: #FFFFFF; padding: 12px 18px; text-decoration: none; border-radius: 10px;">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <form action="{{ route('logout') }}" method="POST" style="display: block;">
+                    @csrf
+                    <a href="#" onclick="this.closest('form').submit();" style="display: flex; align-items: center; gap: 10px;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px;">
                             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
                             <polyline points="16 17 21 12 16 7" />
                             <line x1="21" y1="12" x2="9" y2="12" />
@@ -93,104 +78,109 @@
                     </a>
                 </form>
             </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <h2 class="hero-title">¡Bienvenido AD!</h2>
+    </section>
+
+<section class="search-section">
+        <form action="{{ route('dashboard.admin') }}" method="GET" style="width: 100%; display: flex; flex-direction: column; gap: 15px;">
+            
+            <div class="search-box">
+                <input type="text" name="search" placeholder="Buscar por nombre o lugar..." value="{{ request('search') }}" />
+                <button type="submit" class="btn-search">Buscar</button>
+                
+                @if(request('search') || request('filter_date'))
+                    <a href="{{ route('dashboard.admin') }}" class="btn-search" style="background-color: #777; text-decoration: none; text-align: center; display:flex; align-items:center; justify-content:center;">
+                        Limpiar todo
+                    </a>
+                @endif
+            </div>
+
+            <div class="filters">    
+                <input 
+                    type="date" 
+                    name="filter_date" 
+                    value="{{ request('filter_date') }}"
+                    style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-family: 'Inter', sans-serif;"
+                    title="Filtrar por fecha de inicio"
+                >
 
             </div>
 
-        </div>
+        </form>
 
-    </nav>
-
-
-
-    <!-- HERO -->
-    <section class="hero">
-        <h2 class="hero-title">¡Bienvenido!</h2>
-    </section>
-
-    <!-- BUSCADOR -->
-    <section class="search-section">
-        <div class="search-box">
-            <input type="text" placeholder="Buscar Eventos, Categorías o Tecnologías..." />
-            <button class="btn-search">Buscar</button>
-        </div>
-
-        <div class="filters">
-            <select>
-                <option>Todas las categorías</option>
-            </select>
-            <select>
-                <option>Cualquier fecha</option>
-            </select>
-            <select>
-                <option>Todos los lugares</option>
-            </select>
+        <div class="filters" style="margin-top: 0; justify-content: flex-end;">
+             <div class="new-event">
+                <a href="{{ route('events.create') }}" class="btn-search" style="text-decoration: none; display: inline-block; text-align: center;">
+                    Crear evento
+                </a>
+            </div>
         </div>
     </section>
 
     <!-- EVENTOS -->
-    <section class="events">
-        <div class="events-header">
-            <h2>Eventos y concursos de tecnología</h2>
-            <a href="#" class="view-all">Ver todos los eventos →</a>
-        </div>
+<section class="events">
+    <div class="events-header">
+        <h2>Eventos y concursos de tecnología</h2>
+        <a href="#" class="view-all">Ver todos los eventos →</a>
+    </div>
 
-        <div class="events-grid">
+    <div class="events-grid">
+        @if($events->count() > 0)
+            @foreach($events as $event)
+                <div class="event-card">
+                    <!-- Botón envolvente, actúa como un enlace -->
+                    <button 
+                        onclick="window.location='{{ route('juez') }}'" 
+                        class="card-link"
+                        style="all: unset; width: 100%; background: none; border: none; cursor: pointer;">
+                        <!-- El contenido de la tarjeta de evento sigue igual -->
+                        <img src="{{ $event->image_url ?? asset('images/default-event.jpg') }}" 
+                             class="event-img" 
+                             alt="{{ $event->title }}"
+                             onerror="this.src='{{ asset('images/logo.png') }}'">
+                             
+                        <div class="event-info">
+                            <p class="event-date">
+                                📅 {{ \Carbon\Carbon::parse($event->start_date)->format('d M, Y') }} 
+                                - {{ \Carbon\Carbon::parse($event->start_time)->format('H:i') }} hrs
+                            </p>
 
-            <!-- Card 1 -->
-            <div class="event-card">
-                <a href="evento.html" class="card-link"></a>
-                <img src="../images/evento1.jpeg" class="event-img" />
-                <div class="event-info">
-                    <p class="event-date">📅 15 Oct, 2023 - 20:00 hrs</p>
-                    <h3 class="event-title">InnovaTecNM</h3>
-                    <p class="event-description">
-                        Programa de innovación tecnológica, emprendimiento y desarrollo de proyectos creativos...
-                    </p>
-                    <p class="event-location">📍 ITO Campus Central</p>
+                            <h3 class="event-title">{{ $event->title }}</h3>
+
+                            <p class="event-description">
+                                {{ \Illuminate\Support\Str::limit($event->description, 100) }}
+                            </p>
+
+                            <p class="event-location">📍 {{ $event->location }}</p>
+                            
+                            <p style="font-size: 0.8rem; color: #666; margin-top: 5px;">
+                                Organiza: {{ $event->organizer }}
+                            </p>
+                        </div>
+                    </button>
                 </div>
+            @endforeach
+        @else
+            <div style="grid-column: 1 / -1; text-align: center; padding: 50px;">
+                <h3>No hay eventos próximos 😢</h3>
+                <p>¡Sé el primero en crear uno!</p>
             </div>
+        @endif
+    </div>
+</section>
 
-            <!-- Card 2 -->
-            <div class="event-card">
-                <a href="evento.html" class="card-link"></a>
-                <img src="../images/evento2.jpeg" class="event-img" />
-                <div class="event-info">
-                    <p class="event-date">📅 22 Oct, 2023 - 09:00 hrs</p>
-                    <h3 class="event-title">HackaTec</h3>
-                    <p class="event-description">
-                        Certamen donde los participantes resuelven desafíos tecnológicos...
-                    </p>
-                    <p class="event-location">📍 Plaza de la Tecnología</p>
 
-                </div>
-            </div>
 
-            <!-- Card 3 -->
-            <div class="event-card">
-                <a href="evento.html" class="card-link"></a>
-                <img src="../images/evento3.jpeg" class="event-img" />
-                <div class="event-info">
-                    <p class="event-date">📅 5 Nov, 2023 - 16:00 hrs</p>
-                    <h3 class="event-title">Oaxaca Emprende</h3>
-                    <p class="event-description">
-                        Evento que reúne proyectos innovadores de diversas universidades...
-                    </p>
-                    <p class="event-location">📍 Auditorio Principal</p>
-                </div>
-            </div>
-
-        </div>
-    </section>
-
-    <!-- FOOTER -->
     <footer class="footer">
         <div class="footer-grid">
-
             <div>
                 <h3>CodeVision</h3>
-                <p>Plataforma oficial del Instituto Tecnológico de Oaxaca para gestión de eventos tecnológicos.</p>
+                <p>Plataforma oficial del Instituto Tecnológico de Oaxaca.</p>
             </div>
-
             <div>
                 <h3>Enlaces Rápidos</h3>
                 <ul>
@@ -200,7 +190,6 @@
                     <li>Calendario</li>
                 </ul>
             </div>
-
             <div>
                 <h3>Recursos</h3>
                 <ul>
@@ -209,7 +198,6 @@
                     <li>Políticas de evento</li>
                 </ul>
             </div>
-
             <div>
                 <h3>Contactos</h3>
                 <ul>
@@ -218,12 +206,9 @@
                     <li>Categorías</li>
                 </ul>
             </div>
-
         </div>
-
-        <p class="footer-copy">© 2023 CodeVision - Instituto Tecnológico de Oaxaca</p>
+        <p class="footer-copy">© {{ date('Y') }} CodeVision - Instituto Tecnológico de Oaxaca</p>
     </footer>
 
 </body>
-
 </html>
