@@ -15,7 +15,7 @@
 
     <div class="header">
         <h2>Instituto Tecnológico de Oaxaca</h2>
-        <h3>Reporte de Resultados: {{ $evento->title }}</h3>
+        <h3>Reporte de Resultados: {{ $event->title }}</h3>
         <p>Fecha: {{ date('d/m/Y') }}</p>
     </div>
 
@@ -29,12 +29,14 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($equipos as $index => $equipo)
+            {{-- CORREGIDO: Usar $teams y la variable de iteración $team --}}
+            @foreach($teams as $index => $team)
                 <tr>
                     <td>{{ $index + 1 }}</td>
-                    <td>{{ $equipo->name }}</td>
-                    <td>{{ $equipo->users->count() }}</td>
-                    <td>{{ $equipo->evaluations->sum('score') }} pts</td>
+                    <td>{{ $team->name }}</td>
+                    {{-- Usar $team en lugar de $equipo --}}
+                    <td>{{ $team->users->count() }}</td> 
+                    <td>{{ $team->evaluations->avg('score') }} pts</td>
                 </tr>
             @endforeach
         </tbody>
