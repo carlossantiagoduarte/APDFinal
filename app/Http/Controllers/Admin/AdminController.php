@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\Event;
 use App\Models\Team; 
 use Illuminate\Support\Facades\Auth;
+use Barryvdh\DomPDF\Facade\Pdf; // PDFS
+
 
 class AdminController extends Controller
 {
@@ -171,5 +173,19 @@ class AdminController extends Controller
         $event->delete();
 
         return redirect()->route('dashboard.admin')->with('success', 'Evento eliminado.');
+    }
+        /**
+     * FUNCIÓN 8: Generar PDF de Resultados
+     */
+    public function descargarReporte($id)
+    {
+        $evento = Event::findOrFail($id);
+        $equipos = Team::where('event_id', $id)->with('evaluations')->get();
+
+        // Cargamos la vista del PDF (la crearemos en el siguiente paso)
+        $pdf = Pdf::loadView('Admin.ReportePDF', compact('evento', 'equipos'));
+
+        // Descargamos el archivo
+        return $pdf->download('Reporte_' . $evento->title . '.pdf');
     }
 }
