@@ -23,11 +23,11 @@ class JuezController extends Controller
     public function verEquipos($id)
     {
         $evento = Event::findOrFail($id);
-        
+
         // Buscamos los equipos y cargamos SOLO la evaluación que hizo ESTE juez (si existe)
         // Esto sirve para mostrar la nota que ya puso y permitirle editarla.
         $equipos = Team::where('event_id', $id)
-            ->with(['evaluations' => function($q) {
+            ->with(['evaluations' => function ($q) {
                 $q->where('user_id', Auth::id());
             }])
             ->get();
@@ -57,5 +57,16 @@ class JuezController extends Controller
         );
 
         return back()->with('success', 'Calificación guardada correctamente.');
+    }
+    public function verDetalleEquipo($team_id)
+    {
+        $equipo = Team::with(['users', 'event'])->findOrFail($team_id);
+
+        // Buscar mi evaluación previa
+        $miEvaluacion = Evaluation::where('team_id', $team_id)
+            ->where('user_id', Auth::id())
+            ->first();
+
+        return view('Juez.CalificarEquipo', compact('equipo', 'miEvaluacion'));
     }
 }
