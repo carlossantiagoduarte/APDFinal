@@ -70,6 +70,11 @@
         <button class="btn-admin" onclick="window.location.href='{{ route('editarevento') }}'">
             Ver información del evento
         </button>
+        
+        <button class="btn-admin" onclick="window.location.href='{{ route('events.pdf', $evento->id) }}'"
+            style="background-color: #d32f2f; color: white;">
+            Descargar PDF
+        </button>
 
     </div>
 
