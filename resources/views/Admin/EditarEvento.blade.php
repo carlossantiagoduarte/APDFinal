@@ -54,6 +54,9 @@
             border: 1px solid #4CAF50 !important;
             cursor: text !important;
         }
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 
@@ -114,7 +117,9 @@
 
             <form id="eventForm" action="{{ route('events.update', $event->id) }}" method="POST">
                 @csrf
-                @method('PUT') <div class="step active" id="step1">
+                @method('PUT') 
+
+                <div class="step active" id="step1">
 
                     <div class="form-row">
                         <div class="form-group">
@@ -154,9 +159,7 @@
 
                     <div class="buttons">
                         <button type="button" id="editarBtn" style="background-color: #ff9800; color: white;">Habilitar Edición</button>
-                        
                         <button type="button" id="eliminarBtn" style="background-color: #f44336; color: white;">Eliminar Evento</button>
-                        
                         <button type="button" id="nextBtn">Siguiente →</button>
                     </div>
 
@@ -180,10 +183,29 @@
                     </div>
 
                     <div class="form-row">
+                         @php
+                            $standardCategories = ['Tecnología', 'Programación', 'Ciberseguridad', 'Inteligencia Artificial', 'Diseño UI/UX', 'Robótica'];
+                            $currentCategory = old('main_category', $event->main_category);
+                            $isOther = !in_array($currentCategory, $standardCategories);
+                         @endphp
+
                          <div class="form-group">
                             <label>Categoría</label>
-                            <input type="text" name="main_category" value="{{ old('main_category', $event->main_category) }}" disabled>
+                            <select id="categorySelect" name="main_category" disabled style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;" required>
+                                @foreach($standardCategories as $cat)
+                                    <option value="{{ $cat }}" {{ $currentCategory == $cat ? 'selected' : '' }}>{{ $cat }}</option>
+                                @endforeach
+                                <option value="Otro" {{ $isOther ? 'selected' : '' }}>Otro (Escribir manualmente)</option>
+                            </select>
+
+                            <input type="text" id="otherCategoryInput" name="other_category" 
+                                   value="{{ $isOther ? $currentCategory : '' }}"
+                                   placeholder="Escribe la categoría..." 
+                                   style="margin-top: 10px;" 
+                                   class="{{ $isOther ? '' : 'hidden' }}"
+                                   disabled>
                         </div>
+
                         <div class="form-group">
                             <label>Modalidad</label>
                             <select name="modality" disabled style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
@@ -224,14 +246,12 @@
         @method('DELETE')
     </form>
 
-
     <script>
         const editarBtn = document.getElementById("editarBtn");
         const eliminarBtn = document.getElementById("eliminarBtn");
         const guardarBtn = document.getElementById("guardarBtn");
         const deleteForm = document.getElementById("deleteForm");
         
-        // Seleccionamos todos los inputs y selects dentro del form principal
         const inputs = document.querySelectorAll("#eventForm input, #eventForm textarea, #eventForm select");
         
         const nextBtn = document.getElementById("nextBtn");
@@ -239,15 +259,40 @@
         const step1 = document.getElementById("step1");
         const step2 = document.getElementById("step2");
 
-        // Lógica para Habilitar Edición
+        // Lógica para Select de Categoría
+        const categorySelect = document.getElementById('categorySelect');
+        const otherCategoryInput = document.getElementById('otherCategoryInput');
+
+        categorySelect.addEventListener('change', function() {
+            if (this.value === 'Otro') {
+                otherCategoryInput.style.display = 'block';
+                otherCategoryInput.required = true;
+                otherCategoryInput.disabled = false; // Asegurar que esté habilitado si estamos editando
+                otherCategoryInput.focus();
+            } else {
+                otherCategoryInput.style.display = 'none';
+                otherCategoryInput.required = false;
+                otherCategoryInput.value = '';
+            }
+        });
+
+        // Habilitar Edición
         editarBtn.addEventListener("click", () => {
             inputs.forEach(el => {
-                el.disabled = false;
-                el.classList.add("editable");
+                // Solo habilitamos el input "Otro" si la opción "Otro" está seleccionada
+                if (el.id === 'otherCategoryInput') {
+                    if (categorySelect.value === 'Otro') {
+                        el.disabled = false;
+                        el.classList.add("editable");
+                    }
+                } else {
+                    el.disabled = false;
+                    el.classList.add("editable");
+                }
             });
-            // Habilitar botón de guardar y cambiar color
+
             guardarBtn.disabled = false;
-            guardarBtn.style.backgroundColor = "#4CAF50"; // Verde
+            guardarBtn.style.backgroundColor = "#4CAF50";
             guardarBtn.style.cursor = "pointer";
             
             editarBtn.textContent = "Edición Activa";
@@ -255,7 +300,6 @@
             editarBtn.style.backgroundColor = "#ccc";
         });
 
-        // Navegación entre pasos
         nextBtn.addEventListener("click", () => {
             step1.classList.remove("active");
             step2.classList.add("active");
@@ -266,10 +310,9 @@
             step1.classList.add("active");
         });
 
-        // Lógica para Eliminar
         eliminarBtn.addEventListener("click", () => {
             if (confirm("¿Estás SEGURO de eliminar este evento? Esta acción no se puede deshacer.")) {
-                deleteForm.submit(); // Enviamos el formulario oculto
+                deleteForm.submit();
             }
         });
     </script>
@@ -280,7 +323,7 @@
                 <h3>CodeVision</h3>
                 <p>Plataforma oficial del Instituto Tecnológico de Oaxaca.</p>
             </div>
-            </div>
+        </div>
         <p class="footer-copy">© {{ date('Y') }} CodeVision - Instituto Tecnológico de Oaxaca</p>
     </footer>
 
