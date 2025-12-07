@@ -46,7 +46,7 @@
                 <div class="tabs">
                     <button id="btnPublic" class="active">Equipo público</button>
                     <button id="btnPrivate">Equipo privado</button>
-                    <button id="btnCreate" onclick="window.location.href='{{ route('crearequipo') }}'">Crear equipo</button>
+                    <button id="btnCreate" onclick="window.location.href='{{ route('teams.create') }}'">Crear equipo</button>
                 </div>
 
                 <div id="publicSection">
@@ -60,7 +60,7 @@
                                 <p style="font-size:0.9em;">Líder: {{ $equipo->leader_name }}</p>
                                 <p style="font-size:0.8em; color:gray;">{{ $equipo->description }}</p>
                                 
-                                <form action="{{ route('equipos.solicitar') }}" method="POST" style="margin-top:10px;">
+                                <form action="{{ route('teams.join.request') }}" method="POST" style="margin-top:10px;">
                                     @csrf
                                     <input type="hidden" name="team_id" value="{{ $equipo->id }}">
                                     <button type="submit" style="background:#333; color:white; border:none; padding:8px 12px; border-radius:4px; cursor:pointer;">
@@ -78,7 +78,7 @@
                     <h2>Equipo privado</h2>
                     <p>Únete con tu código de invitación</p>
 
-                    <form action="{{ route('equipos.unirse.codigo') }}" method="POST" class="form">
+                    <form action="{{ route('teams.joun.code') }}" method="POST" class="form">
                         @csrf
                         <input name="invite_code" placeholder="Ej: ITO-AX45-TEAM" required style="width:100%; padding:10px; margin-bottom:15px; border:1px solid #ccc; border-radius:5px;">
                         
