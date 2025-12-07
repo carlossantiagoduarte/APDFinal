@@ -30,6 +30,7 @@
             <div id="user-toggle" class="user-name">
                 {{ Auth::user()->name }}
             </div>
+            {{-- Nota: El menú desplegable no está aquí, asumimos que está en una plantilla base --}}
         </div>
     </nav>
 
@@ -63,7 +64,8 @@
                     </div>
                 @endif
 
-                <form id="createTeamForm" action="{{ route('equipos.store') }}" method="POST">
+                {{-- ACCIÓN CORREGIDA: equipos.store -> teams.store --}}
+                <form id="createTeamForm" action="{{ route('teams.store') }}" method="POST">
                     @csrf
 
                     <div class="form-grid">
@@ -113,7 +115,7 @@
 
                     <div class="buttons-row" style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
                         <button type="button" class="btn-secondary" 
-                            onclick="window.location.href='{{ isset($eventoPreseleccionado) ? route('estudiante.evento.ver', $eventoPreseleccionado->id) : route('dashboard.estudiante') }}'">
+                            onclick="window.location.href='{{ isset($eventoPreseleccionado) ? route('student.event.show', $eventoPreseleccionado->id) : route('dashboard.estudiante') }}'">
                             Cancelar
                         </button>
                         
