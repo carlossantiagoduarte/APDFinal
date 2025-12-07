@@ -50,7 +50,7 @@ class AdminController extends Controller
      */
     public function store(Request $request)
     {
-        // 1. Validación de datos (Incluyendo los campos nuevos)
+        // 1. Validación de datos
         $validated = $request->validate([
             // Campos básicos
             'title' => 'required|string|max:255',
@@ -67,21 +67,22 @@ class AdminController extends Controller
             'start_time' => 'required', 
             'end_time' => 'required',
             
-            // CAMPOS NUEVOS (Agregados recientemente)
+            // CAMPOS NUEVOS
             'main_category' => 'required|string|max:255',
+            'other_category' => 'nullable|string|max:255', // Validamos el campo extra
             'modality' => 'required|string',
             
             // URLs e Imágenes (Opcionales)
             'image_url' => 'nullable|url',
-            'banner_url' => 'nullable|url',        // Nuevo
-            'registration_link' => 'nullable|url', // Nuevo
+            'banner_url' => 'nullable|url',
+            'registration_link' => 'nullable|url',
         ]);
 
         // 2. Crear instancia del modelo
         $event = new Event();
         $event->user_id = Auth::id(); // El creador es el usuario logueado
         
-        // 3. Asignar valores
+        // 3. Asignar valores básicos
         $event->title = $request->title;
         $event->organizer = $request->organizer;
         $event->location = $request->location;
@@ -99,13 +100,19 @@ class AdminController extends Controller
         
         // Archivos e Imágenes
         $event->image_url = $request->image_url;
-        $event->documents_info = $request->documents_info;
-        
-        // CAMPOS NUEVOS
-        $event->main_category = $request->main_category;
-        $event->modality = $request->modality;
         $event->banner_url = $request->banner_url;
+        $event->documents_info = $request->documents_info;
         $event->registration_link = $request->registration_link;
+        $event->modality = $request->modality;
+
+        // --- LÓGICA ESPECIAL PARA CATEGORÍA "OTRO" ---
+        if ($request->main_category === 'Otro' && $request->filled('other_category')) {
+            // Si eligió 'Otro', guardamos lo que escribió en el input manual
+            $event->main_category = $request->other_category;
+        } else {
+            // Si no, guardamos lo que eligió del select
+            $event->main_category = $request->main_category;
+        }
 
         // 4. Guardar
         $event->save();
@@ -119,40 +126,50 @@ class AdminController extends Controller
      */
     public function showEventResults($id)
     {
-        // Buscamos el evento (si no existe, da error 404)
         $evento = Event::findOrFail($id);
-
-        // Traemos equipos con sus evaluaciones sumadas
         $equipos = Team::where('event_id', $id)->with('evaluations')->get();
 
         return view('Admin.ResultadosEvento', compact('evento', 'equipos'));
     }
-    // 1. Mostrar el formulario con los datos cargados
-public function edit($id)
-{
-    $event = Event::findOrFail($id);
-    return view('Admin.EditarEvento', compact('event'));
-}
 
-// 2. Guardar los cambios en la Base de Datos
-public function update(Request $request, $id)
-{
-    $event = Event::findOrFail($id);
-    
-    // Validamos (puedes copiar las reglas del store aquí si quieres ser estricto)
-    $data = $request->except(['_token', '_method']);
-    
-    $event->update($data); // Actualiza todo lo que coincida
+    /**
+     * FUNCIÓN 5: Mostrar el formulario de edición
+     */
+    public function edit($id)
+    {
+        $event = Event::findOrFail($id);
+        return view('Admin.EditarEvento', compact('event'));
+    }
 
-    return redirect()->route('dashboard.admin')->with('success', 'Evento actualizado correctamente.');
-}
+    /**
+     * FUNCIÓN 6: Actualizar cambios en la Base de Datos
+     */
+    public function update(Request $request, $id)
+    {
+        $event = Event::findOrFail($id);
+        
+        // Preparamos los datos, excluyendo tokens y el campo auxiliar 'other_category'
+        $data = $request->except(['_token', '_method', 'other_category']);
+        
+        // --- LÓGICA ESPECIAL PARA CATEGORÍA "OTRO" AL EDITAR ---
+        if ($request->main_category === 'Otro' && $request->filled('other_category')) {
+            $data['main_category'] = $request->other_category;
+        }
+        
+        // Actualizamos todo
+        $event->update($data);
 
-// 3. Eliminar el evento
-public function destroy($id)
-{
-    $event = Event::findOrFail($id);
-    $event->delete();
+        return redirect()->route('dashboard.admin')->with('success', 'Evento actualizado correctamente.');
+    }
 
-    return redirect()->route('dashboard.admin')->with('success', 'Evento eliminado.');
-}
+    /**
+     * FUNCIÓN 7: Eliminar el evento
+     */
+    public function destroy($id)
+    {
+        $event = Event::findOrFail($id);
+        $event->delete();
+
+        return redirect()->route('dashboard.admin')->with('success', 'Evento eliminado.');
+    }
 }
