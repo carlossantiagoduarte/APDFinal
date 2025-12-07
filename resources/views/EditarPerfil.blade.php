@@ -14,6 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
 
     <style>
+        /* ... Estilos CSS ... */
         .profile-back-arrow {
             display: inline-flex;
             align-items: center;
@@ -25,10 +26,10 @@
             text-decoration: none;
             color: #333;
             font-size: 1.5rem;
-            margin: 20px 0 0 40px; /* Ajusta márgenes según diseño */
+            margin: 20px 0 0 40px; 
             transition: background 0.3s;
-            position: absolute; /* O 'relative' según prefieras */
-            top: 80px; /* Debajo del navbar */
+            position: absolute; 
+            top: 80px; 
             left: 20px;
         }
         .profile-back-arrow:hover {
@@ -63,10 +64,14 @@
         <div class="navbar-left">
             {{-- LOGO CON ENLACE DINÁMICO SEGÚN ROL --}}
             @php
-                $dashboardRoute = '#';
-                if(Auth::user()->hasRole('Admin')) $dashboardRoute = route('dashboard.admin');
-                elseif(Auth::user()->hasRole('Juez')) $dashboardRoute = route('dashboard.juez');
-                elseif(Auth::user()->hasRole('Estudiante')) $dashboardRoute = route('dashboard.estudiante');
+                // Se determina la ruta de inicio según el rol para el enlace del logo y navbar
+                $dashboardRoute = route('dashboard'); // Usamos el distribuidor general
+                // También puedes usar una lógica más explícita:
+                /*
+                if(Auth::user()->role === 'admin') $dashboardRoute = route('dashboard.admin');
+                elseif(Auth::user()->role === 'judge') $dashboardRoute = route('dashboard.juez');
+                elseif(Auth::user()->role === 'student') $dashboardRoute = route('dashboard.estudiante');
+                */
             @endphp
             
             <a href="{{ $dashboardRoute }}" style="text-decoration: none; display: flex; align-items: center; color: inherit; gap: 10px;">
@@ -97,8 +102,8 @@
                     Inicio
                 </a>
 
-                {{-- PERFIL (Activo) --}}
-                <a href="{{ route('editarperfil') }}" style="background-color: #f0f0f0;">
+                {{-- PERFIL (Ya estamos en profile.edit, se puede enlazar a sí mismo o simplemente desactivar el enlace) --}}
+                <a href="{{ route('profile.edit') }}" style="background-color: #f0f0f0;">
                     <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="7" r="4" />
                         <path d="M5.5 21a6.5 6.5 0 0 1 13 0" />
@@ -157,6 +162,7 @@
         <div class="profile-form-box">
             <img src="{{ asset('images/logo.png') }}" class="profile-logo">
 
+            {{-- CORRECCIÓN: La acción del formulario es correcta (profile.update) --}}
             <form class="profile-form" action="{{ route('profile.update') }}" method="POST">
                 @csrf
                 @method('PUT')
@@ -177,6 +183,7 @@
                 <p style="font-size: 0.9em; color: #666; margin-bottom: 10px;">Deja las contraseñas vacías si no quieres cambiarlas.</p>
 
                 <label>Nueva Contraseña:</label>
+                {{-- Los campos de contraseña NO deben tener old() --}}
                 <input type="password" name="password" placeholder="Opcional">
 
                 <label>Confirmar Contraseña:</label>
@@ -197,20 +204,21 @@
             <div>
                 <h3>Enlaces Rápidos</h3>
                 <ul>
-                    <li>Inicio</li>
-                    <li>Eventos</li>
+                    <li><a href="{{ $dashboardRoute }}">Inicio</a></li>
+                    <li><a href="#">Eventos</a></li>
+                    <li><a href="#">Categorías</a></li>
                 </ul>
             </div>
             <div>
                 <h3>Recursos</h3>
                 <ul>
-                    <li>Preguntas frecuentes</li>
+                    <li><a href="#">Preguntas frecuentes</a></li>
                 </ul>
             </div>
             <div>
                 <h3>Contactos</h3>
                 <ul>
-                    <li>Inicio</li>
+                    <li><a href="#">Información de Contacto</a></li>
                 </ul>
             </div>
         </div>
