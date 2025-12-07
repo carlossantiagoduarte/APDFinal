@@ -5,187 +5,215 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Event;
-use App\Models\Team; 
-use Illuminate\Support\Facades\Auth;
-use Barryvdh\DomPDF\Facade\Pdf; // PDFS
-
+use App\Models\Team;
+use App\Models\User;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Auth; // Asegúrate de tener Auth si es necesario
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException; // Útil si necesitas manejar excepciones de validación
 
 class AdminController extends Controller
 {
     /**
-     * FUNCIÓN 1: Dashboard con lista de eventos y filtros
+     * FUNCIÓN 1: Dashboard: Ver todos los eventos (activos y finalizados)
      */
-    public function index(Request $request)
+    public function index()
     {
-        $query = Event::query();
-
-        // 1. Buscador de Texto (Nombre o Lugar)
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('title', 'LIKE', "%{$search}%")
-                  ->orWhere('location', 'LIKE', "%{$search}%");
-            });
-        }
-
-        // 2. Filtro de FECHA
-        if ($request->filled('filter_date')) {
-            $query->whereDate('start_date', $request->filter_date);
-        }
-
-        // Ordenamos por fecha de creación (los más nuevos primero)
-        $events = $query->orderBy('created_at', 'desc')->get();
-
+        // Traemos TODOS los eventos ordenados por fecha de inicio descendente
+        $events = Event::orderBy('start_date', 'desc')->get();
         return view('Admin.DashboardAdmin', compact('events'));
     }
 
+    // ----------------------------------------------------
+    // FUNCIONES CRUD DE EVENTOS (Completando el ciclo de vida)
+    // ----------------------------------------------------
+
     /**
-     * FUNCIÓN 2: Formulario para crear evento
+     * FUNCIÓN 2: Mostrar el formulario para crear un nuevo evento.
      */
     public function create()
     {
-        return view('Admin.CrearEvento');
+       return view('Admin.CrearEvento');
     }
 
     /**
-     * FUNCIÓN 3: Guardar el evento en la BD
+     * FUNCIÓN 3: Guardar el nuevo evento en la base de datos.
      */
     public function store(Request $request)
     {
-        // 1. Validación de datos
-        $validated = $request->validate([
-            // Campos básicos
+        // Validación completa (Ajusta si tienes más campos)
+        $validatedData = $request->validate([
             'title' => 'required|string|max:255',
-            'organizer' => 'required|string|max:255',
+            'organizer' => 'required|string|max:100',
             'location' => 'required|string|max:255',
             'description' => 'required|string',
-            'email' => 'required|email',
-            'phone' => 'required|string',
-            'max_participants' => 'required|integer',
-            
-            // Fechas y Horas
+            'email' => 'required|email|max:255',
+            'phone' => 'required|string|max:20',
+            'max_participants' => 'required|integer|min:1',
             'start_date' => 'required|date',
-            'end_date' => 'required|date',
-            'start_time' => 'required', 
-            'end_time' => 'required',
-            
-            // CAMPOS NUEVOS
-            'main_category' => 'required|string|max:255',
-            'other_category' => 'nullable|string|max:255', // Validamos el campo extra
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'start_time' => 'required|date_format:H:i',
+            'end_time' => 'required|date_format:H:i|after:start_time',
+            'main_category' => 'required|string',
             'modality' => 'required|string',
-            
-            // URLs e Imágenes (Opcionales)
-            'image_url' => 'nullable|url',
-            'banner_url' => 'nullable|url',
-            'registration_link' => 'nullable|url',
+            // 'other_category' => 'nullable|string', // Si lo usas, asegúrate de que se mapee en el modelo
         ]);
 
-        // 2. Crear instancia del modelo
-        $event = new Event();
-        $event->user_id = Auth::id(); // El creador es el usuario logueado
-        
-        // 3. Asignar valores básicos
-        $event->title = $request->title;
-        $event->organizer = $request->organizer;
-        $event->location = $request->location;
-        $event->description = $request->description;
-        $event->email = $request->email;
-        $event->phone = $request->phone;
-        $event->max_participants = $request->max_participants;
-        $event->requirements = $request->requirements;
-        
-        // Fechas
-        $event->start_date = $request->start_date;
-        $event->end_date = $request->end_date;
-        $event->start_time = $request->start_time;
-        $event->end_time = $request->end_time;
-        
-        // Archivos e Imágenes
-        $event->image_url = $request->image_url;
-        $event->banner_url = $request->banner_url;
-        $event->documents_info = $request->documents_info;
-        $event->registration_link = $request->registration_link;
-        $event->modality = $request->modality;
+        // Asegurar que el usuario_id del administrador se adjunte automáticamente
+        $validatedData['user_id'] = Auth::id();
 
-        // --- LÓGICA ESPECIAL PARA CATEGORÍA "OTRO" ---
-        if ($request->main_category === 'Otro' && $request->filled('other_category')) {
-            // Si eligió 'Otro', guardamos lo que escribió en el input manual
-            $event->main_category = $request->other_category;
-        } else {
-            // Si no, guardamos lo que eligió del select
-            $event->main_category = $request->main_category;
-        }
+        Event::create($validatedData);
 
-        // 4. Guardar
-        $event->save();
+        return redirect()->route('dashboard.admin')->with('success', '¡Evento creado con éxito!');
 
-        // 5. Redirigir con éxito
-        return redirect()->route('dashboard.admin')->with('success', '¡Evento creado correctamente!');
+        dd($validatedData);
     }
 
     /**
-     * FUNCIÓN 4: Ver tabla de resultados y equipos
+     * FUNCIÓN 4: Mostrar el formulario para editar un evento existente.
+     * @param \App\Models\Event $event Usando Implicit Model Binding
      */
-    public function showEventResults($id)
+    public function edit(Event $event) // Usando Model Binding
     {
-        $evento = Event::findOrFail($id);
-        $equipos = Team::where('event_id', $id)->with('evaluations')->get();
-
-        return view('Admin.ResultadosEvento', compact('evento', 'equipos'));
-    }
-
-    /**
-     * FUNCIÓN 5: Mostrar el formulario de edición
-     */
-    public function edit($id)
-    {
-        $event = Event::findOrFail($id);
         return view('Admin.EditarEvento', compact('event'));
     }
 
     /**
-     * FUNCIÓN 6: Actualizar cambios en la Base de Datos
+     * FUNCIÓN 5: Actualizar el evento en la base de datos.
+     * @param \App\Models\Event $event Usando Implicit Model Binding
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Event $event) // Usando Model Binding
     {
-        $event = Event::findOrFail($id);
-        
-        // Preparamos los datos, excluyendo tokens y el campo auxiliar 'other_category'
-        $data = $request->except(['_token', '_method', 'other_category']);
-        
-        // --- LÓGICA ESPECIAL PARA CATEGORÍA "OTRO" AL EDITAR ---
-        if ($request->main_category === 'Otro' && $request->filled('other_category')) {
-            $data['main_category'] = $request->other_category;
-        }
-        
-        // Actualizamos todo
-        $event->update($data);
+        $validatedData = $request->validate([
+            'title' => 'required|string|max:255',
+            'organizer' => 'required|string|max:100',
+            'location' => 'required|string|max:255',
+            'description' => 'required|string',
+            'email' => 'required|email|max:255',
+            'phone' => 'required|string|max:20',
+            'max_participants' => 'required|integer|min:1',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'start_time' => 'required|date_format:H:i',
+            'end_time' => 'required|date_format:H:i|after:start_time',
+            'main_category' => 'required|string',
+            'modality' => 'required|string',
+            // ... otras validaciones ...
+        ]);
 
-        return redirect()->route('dashboard.admin')->with('success', 'Evento actualizado correctamente.');
+        $event->update($validatedData);
+
+        return redirect()->route('dashboard.admin')->with('success', 'Evento "' . $event->title . '" actualizado con éxito.');
     }
 
     /**
-     * FUNCIÓN 7: Eliminar el evento
+     * FUNCIÓN 6: Eliminar un evento de la base de datos.
+     * @param \App\Models\Event $event Usando Implicit Model Binding
      */
-    public function destroy($id)
+    public function destroy(Event $event) // Usando Model Binding
     {
-        $event = Event::findOrFail($id);
+        $title = $event->title;
+
+        // Asumiendo que las claves foráneas están configuradas para eliminar en cascada (CASCADE)
+        // Si no, debes eliminar equipos, evaluaciones, etc., manualmente antes:
+        // $event->teams()->delete(); 
+
         $event->delete();
 
-        return redirect()->route('dashboard.admin')->with('success', 'Evento eliminado.');
+        return redirect()->route('dashboard.admin')->with('success', 'Evento "' . $title . '" eliminado.');
     }
-        /**
-     * FUNCIÓN 8: Generar PDF de Resultados
+
+    // ----------------------------------------------------
+    // FUNCIONES DE RESULTADOS Y REPORTES
+    // ----------------------------------------------------
+
+    /**
+     * FUNCIÓN 7: Generar el Reporte PDF de Resultados del Evento.
+     * @param \App\Models\Event $event Usando Implicit Model Binding
      */
-    public function descargarReporte($id)
+    public function descargarReporte(Event $event) // Usando Model Binding
     {
-        $evento = Event::findOrFail($id);
-        $equipos = Team::where('event_id', $id)->with('evaluations')->get();
+        // Obtener equipos ordenados por score promedio/total
+        $teams = Team::where('event_id', $event->id)
+            ->with(['evaluations', 'users'])
+            ->get()
+            ->sortByDesc(function ($team) {
+                return $team->evaluations->avg('score');
+            });
 
-        // Cargamos la vista del PDF (la crearemos en el siguiente paso)
-        $pdf = Pdf::loadView('Admin.ReportePDF', compact('evento', 'equipos'));
+        $pdf = Pdf::loadView('Admin.ReportePDF', compact('event', 'teams'))
+            ->setPaper('a4', 'portrait');
 
-        // Descargamos el archivo
-        return $pdf->download('Reporte_' . $evento->title . '.pdf');
+        return $pdf->download('Reporte_' . $event->title . '.pdf');
+    }
+
+    /**
+     * FUNCIÓN 8: Ver tabla de resultados y equipos (ResultadosEvento.blade.php)
+     * @param \App\Models\Event $event Usando Implicit Model Binding
+     */
+    public function showEventResults(Event $event) // Usando Model Binding
+    {
+        // CORRECCIÓN CLAVE: Usar la variable $event en lugar de $evento
+
+        $equipos = Team::where('event_id', $event->id)
+            ->with(['evaluations', 'users'])
+            ->get();
+
+        // Ordenar los equipos por Calificación Promedio para la tabla
+        $equipos = $equipos->sortByDesc(function ($equipo) {
+            return $equipo->evaluations->avg('score'); // Usamos avg() para ser más robustos
+        });
+
+        // Obtener los ganadores (si ya fueron asignados)
+        $ganadores = Team::where('event_id', $event->id)
+            ->whereIn('place', [1, 2, 3])
+            ->orderBy('place', 'asc')
+            ->get();
+
+        // Se pasan las variables $event, $equipos y $ganadores
+        return view('Admin.ResultadosEvento', compact('event', 'equipos', 'ganadores'));
+    }
+
+    /**
+     * FUNCIÓN 9: Asignar Ganadores y Cerrar Evento
+     * @param \App\Models\Event $event Usando Implicit Model Binding
+     */
+    public function setWinners(Event $event) // Usando Model Binding
+    {
+        // Reemplazamos $eventId por $event->id
+        $teams = Team::where('event_id', $event->id)->with('evaluations')->get();
+        $teamsWithScores = $teams->map(function ($team) {
+            $averageScore = $team->evaluations->avg('score');
+            $team->average_score = $averageScore;
+            return $team;
+        });
+
+        $sortedTeams = $teamsWithScores->sortByDesc('average_score');
+
+        $place = 1;
+        $teamsUpdatedCount = 0;
+
+        foreach ($sortedTeams as $team) {
+            // Asigna lugar si tiene un score y el lugar es 1, 2 o 3
+            if ($team->average_score !== null && $place <= 3) {
+                // Si hay empate en promedio, puedes ajustar la lógica aquí para usar el mismo lugar.
+                // Aquí usamos una asignación simple:
+                Team::where('id', $team->id)->update(['place' => $place]);
+                $teamsUpdatedCount++;
+                $place++;
+            } else {
+                if ($place > 3) break;
+            }
+        }
+
+        // Cierra el evento (Marca is_active = false)
+        $event->is_active = false;
+        $event->save();
+
+        if ($teamsUpdatedCount === 0) {
+            return back()->with('error', 'No se pudieron asignar ganadores. Asegúrate de que haya equipos evaluados y se hayan guardado las calificaciones.');
+        }
+
+        return back()->with('success', '¡Ganadores asignados y Evento Cerrado correctamente!');
     }
 }
