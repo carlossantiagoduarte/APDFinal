@@ -42,10 +42,10 @@
 
     <!-- Botón "Subir proyecto" alineado a la derecha y debajo de la tabla -->
     <div class="subir-box" style="text-align: right; margin-top: 20px; margin-right: 20px;">
-        <input type="file" id="archivo" hidden>
-        <button onclick="document.getElementById('archivo').click()">Subir proyecto</button>
-        <p id="nombreArchivo"></p>
-    </div>
+    <button onclick="window.location.href='{{ route('entrega-proyecto') }}'">Subir proyecto</button>
+    <p id="nombreArchivo"></p>
+</div>
+
 
     <div class="footer-controls">
         <div id="paginacion"></div>
