@@ -6,7 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Juez\JuezController;
-use App\Http\Controllers\TeamController; // <--- Importante para la gestión de equipos
+use App\Http\Controllers\TeamController; 
 use App\Models\Event;
 use App\Http\Controllers\ProfileController;
 
@@ -62,7 +62,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/evento/{id}/detalles', [EventController::class, 'show'])->name('events.show');
 
     // Descargar Proyecto (Accesible para Jueces, Admin y el propio Equipo)
-    // Se recomienda protegerlo con Policy en el controlador, pero la ruta base es esta:
     Route::get('/equipo/{id}/descargar-proyecto', [EventController::class, 'descargarArchivo'])->name('equipos.descargar');
 
     // Dashboard Genérico (Distribuidor de tráfico)
@@ -128,41 +127,39 @@ Route::middleware(['auth'])->group(function () {
         // Dashboard Estudiante
         Route::get('/dashboard/estudiante', [EventController::class, 'dashboardEstudiante'])->name('dashboard.estudiante');
 
-        // --- Gestión de Equipos (TeamController) ---
-        // Unirse a Equipo
+        // --- GESTIÓN DE EQUIPOS ---
+        
+        // Vista Unirse a Equipo / Solicitud por Código
         Route::get('unirse-a-equipo', [TeamController::class, 'vistaUnirse'])->name('unirseaequipo');
         Route::post('unirse-a-equipo', [TeamController::class, 'solicitarUnirse'])->name('equipos.solicitar');
+        Route::post('unirse-por-codigo', [TeamController::class, 'unirsePorCodigo'])->name('equipos.unirse.codigo');
 
-        // Crear Equipo
-        Route::get('/crear-equipo', function () {
-            return view('Estudiante.CrearEquipo');
-        })->name('crearequipo');
-        // Aquí faltaría el POST para guardar el equipo creado, si ya tienes la lógica en TeamController:
-        // Route::post('/crear-equipo', [TeamController::class, 'store'])->name('equipos.store');
+        // Vista Crear Equipo / Guardar Equipo
+        Route::get('/crear-equipo', [TeamController::class, 'create'])->name('crearequipo');
+        Route::post('/crear-equipo', [TeamController::class, 'store'])->name('equipos.store');
 
         // Panel de Líder (Aceptar solicitudes)
         Route::get('/solicitudes-equipo', [TeamController::class, 'verSolicitudes'])->name('solicitudesequipo');
         Route::post('/solicitudes-equipo/{usuarioId}', [TeamController::class, 'responderSolicitud'])->name('equipos.responder');
+        
+        // Panel del Evento (HUB)
+        Route::get('/estudiante/evento/{id}', [EventController::class, 'verEventoEstudiante'])->name('estudiante.evento.ver');
 
-        // --- Entrega de Proyecto ---
+        // --- ENTREGA DE PROYECTO ---
+        // 1. Mostrar vista de entrega para un equipo específico
         Route::get('/entrega-proyecto/{team_id}', [EventController::class, 'vistaEntrega'])->name('entrega.proyecto');
+        // 2. Subir archivo al equipo específico
         Route::post('/equipo/{team_id}/subir-archivo', [EventController::class, 'subirArchivo'])->name('equipos.subir_archivo');
 
-        // Subir Archivo
-        Route::post('/mi-equipo/subir-archivo', [EventController::class, 'subirArchivo'])->name('equipos.subir_archivo');
 
+        // --- REPORTES ---
+        // Descargar Constancia Individual
+        Route::get('/mi-constancia/{id}', [EventController::class, 'descargarConstancia'])->name('estudiante.constancia');
+        
         // Vista estática perfil estudiante
         Route::get('/estudiante', function () {
             return view('Estudiante.Estudiante');
         })->name('estudiante');
-        Route::post('unirse-por-codigo', [TeamController::class, 'unirsePorCodigo'])->name('equipos.unirse.codigo');
-        // Mostrar formulario
-        Route::get('/crear-equipo', [TeamController::class, 'create'])->name('crearequipo');
-
-        // Guardar equipo (POST)
-        Route::post('/crear-equipo', [TeamController::class, 'store'])->name('equipos.store');
-        // Panel del Evento (Lista de equipos y opciones de unirse)
-        Route::get('/estudiante/evento/{id}', [EventController::class, 'verEventoEstudiante'])->name('estudiante.evento.ver');
     });
 
 
@@ -179,13 +176,15 @@ Route::middleware(['auth'])->group(function () {
         // Ver equipos de un evento
         Route::get('/juez/evento/{id}/equipos', [JuezController::class, 'verEquipos'])->name('juez.equipos');
 
-        // Guardar Calificación
+        // Guardar Calificación (POST)
         Route::post('/juez/equipo/{team_id}/calificar', [JuezController::class, 'calificar'])->name('juez.calificar');
+
+        // Ver Detalle de Equipo y Calificar (Individual)
+        Route::get('/juez/equipo/{team_id}/detalle', [JuezController::class, 'verDetalleEquipo'])->name('juez.equipo.detalle');
 
         // Redirección base
         Route::get('/juez', function () {
             return redirect()->route('dashboard.juez');
         })->name('juez');
     });
-    Route::get('/juez/equipo/{team_id}/detalle', [JuezController::class, 'verDetalleEquipo'])->name('juez.equipo.detalle');
 });
