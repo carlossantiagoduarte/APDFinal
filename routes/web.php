@@ -144,6 +144,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/estudiante', function () {
             return view('Estudiante.Estudiante');
         })->name('estudiante');
+        Route::post('/mi-equipo/subir-archivo', [EventController::class, 'subirArchivo'])->name('equipos.subir_archivo');
     });
 
 
@@ -168,5 +169,6 @@ Route::middleware(['auth'])->group(function () {
     return redirect()->route('dashboard.juez');
 })->name('juez');
     });
+    Route::get('/equipo/{id}/descargar-proyecto', [EventController::class, 'descargarArchivo'])->name('equipos.descargar');
 
 });
