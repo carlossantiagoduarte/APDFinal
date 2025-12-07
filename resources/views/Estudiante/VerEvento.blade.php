@@ -317,79 +317,80 @@
         </div>
 
         <div class="action-box">
-
             @if ($miEquipo)
                 <h2>Eres parte del equipo "{{ $miEquipo->name }}"</h2>
                 <p>Tu equipo ya está registrado en este evento. Accede al panel de entrega para gestionar tu proyecto.
                 </p>
                 <a href="{{ route('entrega.proyecto', $miEquipo->id) }}" class="btn-action btn-upload">
-                Ir a Entregar Proyecto
+                    Ir a Entregar Proyecto
                 </a>
-            @elseif($yaInicio)
-                <h2>El evento ha comenzado</h2>
-                <p>Lo sentimos, el periodo de inscripción ha finalizado. Puedes ver la lista de participantes abajo.</p>
-                <button class="btn-action btn-secondary" style="opacity: 0.5; cursor: not-allowed;">Inscripción
-                    Cerrada</button>
-            @else
-                <h2>¿Listo para participar?</h2>
-                <p>Aún no tienes equipo en este evento. Crea uno nuevo o únete a uno existente.</p>
-                <div style="display: flex; justify-content: center; gap: 15px;">
-                    <a href="{{ route('crearequipo', ['event_id' => $event->id]) }}" class="btn-action btn-primary">
-                        ➕ Crear Equipo
-                    </a>
-                    <a href="{{ route('unirseaequipo') }}" class="btn-action btn-secondary">
-                        🔍 Unirse a Equipo
-                    </a>
-                </div>
-            @endif
-
+                <a href="{{ route('estudiante.constancia', $event->id) }}" class="btn-action"
+                    style="background-color: #eab308; color: black;">
+                    🎓 Descargar Constancia
+                </a>
         </div>
-
-        <div class="section-title">
-            <span>Equipos Participantes ({{ $teams->count() }})</span>
+    @elseif ($yaInicio)
+        <h2>El evento ha comenzado</h2>
+        <p>Lo sentimos, el periodo de inscripción ha finalizado. Puedes ver la lista de participantes abajo.</p>
+        <button class="btn-action btn-secondary" style="opacity: 0.5; cursor: not-allowed;">Inscripción Cerrada</button>
+    @else
+        <h2>¿Listo para participar?</h2>
+        <p>Aún no tienes equipo en este evento. Crea uno nuevo o únete a uno existente.</p>
+        <div style="display: flex; justify-content: center; gap: 15px;">
+            <a href="{{ route('crearequipo', ['event_id' => $event->id]) }}" class="btn-action btn-primary">
+                ➕ Crear Equipo
+            </a>
+            <a href="{{ route('unirseaequipo') }}" class="btn-action btn-secondary">
+                🔍 Unirse a Equipo
+            </a>
         </div>
+        @endif
+    </div>
 
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Nombre del Equipo</th>
-                        <th>Líder</th>
-                        <th>Miembros</th>
-                        <th>Estado Proyecto</th>
+    <div class="section-title">
+        <span>Equipos Participantes ({{ $teams->count() }})</span>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre del Equipo</th>
+                    <th>Líder</th>
+                    <th>Miembros</th>
+                    <th>Estado Proyecto</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($teams as $team)
+                    <tr class="{{ $miEquipo && $miEquipo->id == $team->id ? 'my-team-row' : '' }}">
+                        <td>
+                            <strong>{{ $team->name }}</strong>
+                            @if ($miEquipo && $miEquipo->id == $team->id)
+                                <span style="font-size:0.75rem; color:#3b82f6; margin-left:5px; font-weight:bold;">(TU
+                                    EQUIPO)</span>
+                            @endif
+                        </td>
+                        <td>{{ $team->leader_name }}</td>
+                        <td>{{ $team->users->count() }} / {{ $team->max_members }}</td>
+                        <td>
+                            @if ($team->project_file_path)
+                                <span class="badge-status badge-done">✅ Entregado</span>
+                            @else
+                                <span class="badge-status badge-pending">⏳ Pendiente</span>
+                            @endif
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    @forelse($teams as $team)
-                        <tr class="{{ $miEquipo && $miEquipo->id == $team->id ? 'my-team-row' : '' }}">
-                            <td>
-                                <strong>{{ $team->name }}</strong>
-                                @if ($miEquipo && $miEquipo->id == $team->id)
-                                    <span
-                                        style="font-size:0.75rem; color:#3b82f6; margin-left:5px; font-weight:bold;">(TU
-                                        EQUIPO)</span>
-                                @endif
-                            </td>
-                            <td>{{ $team->leader_name }}</td>
-                            <td>{{ $team->users->count() }} / {{ $team->max_members }}</td>
-                            <td>
-                                @if ($team->project_file_path)
-                                    <span class="badge-status badge-done">✅ Entregado</span>
-                                @else
-                                    <span class="badge-status badge-pending">⏳ Pendiente</span>
-                                @endif
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="4" style="text-align: center; padding: 40px; color: #888;">
-                                Aún no hay equipos registrados. ¡Sé el primero en inscribirte!
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+                @empty
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 40px; color: #888;">
+                            Aún no hay equipos registrados. ¡Sé el primero en inscribirte!
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
 
     </div>
 
