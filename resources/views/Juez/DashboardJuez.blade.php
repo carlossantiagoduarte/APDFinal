@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dashboard | CodeVision</title>
+    <title>Dashboard Juez | CodeVision</title>
     
     <link rel="stylesheet" href="{{ asset('styles/dashboard.css') }}">
     <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
@@ -38,7 +38,7 @@
     <nav class="navbar">
         <div class="navbar-left">
             <img src="{{ asset('images/logo.png') }}" class="logo" alt="CodeVision Logo">
-            <span class="site-title">CodeVision</span>
+            <span class="site-title">CodeVision (Juez)</span>
         </div>
 
         <div class="user-menu-container">
@@ -57,14 +57,13 @@
                     Inicio
                 </a>
 
-                
                 <a href="{{ route('editarperfil') }}">
-    <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="7" r="4" />
-        <path d="M5.5 21a6.5 6.5 0 0 1 13 0" />
-    </svg>
-    Perfil
-</a>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="7" r="4" />
+                        <path d="M5.5 21a6.5 6.5 0 0 1 13 0" />
+                    </svg>
+                    Perfil
+                </a>
 
                 <form action="{{ route('logout') }}" method="POST" style="display: block;">
                     @csrf
@@ -82,123 +81,62 @@
     </nav>
 
     <section class="hero">
-        <h2 class="hero-title">¡Bienvenido AD!</h2>
+        <h2 class="hero-title">Bienvenido Juez</h2>
     </section>
 
-<section class="search-section">
-        <form action="{{ route('dashboard.admin') }}" method="GET" style="width: 100%; display: flex; flex-direction: column; gap: 15px;">
-            
-            <div class="search-box">
-                <input type="text" name="search" placeholder="Buscar por nombre o lugar..." value="{{ request('search') }}" />
-                <button type="submit" class="btn-search">Buscar</button>
-                
-                @if(request('search') || request('filter_date'))
-                    <a href="{{ route('dashboard.admin') }}" class="btn-search" style="background-color: #777; text-decoration: none; text-align: center; display:flex; align-items:center; justify-content:center;">
-                        Limpiar todo
-                    </a>
-                @endif
-            </div>
+    <section class="events">
+        <div class="events-header">
+            <h2>Selecciona un evento</h2>
+        </div>
 
-            <div class="filters">    
-                <input 
-                    type="date" 
-                    name="filter_date" 
-                    value="{{ request('filter_date') }}"
-                    style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-family: 'Inter', sans-serif;"
-                    title="Filtrar por fecha de inicio"
-                >
+        <div class="events-grid">
+            @if($events->count() > 0)
+                @foreach($events as $event)
+                    <div class="event-card">
+                        
+                        <button 
+                            onclick="window.location='{{ route('juez.equipos', $event->id) }}'" 
+                            class="card-link"
+                            style="all: unset; width: 100%; background: none; border: none; cursor: pointer;">
+                            
+                            <img src="{{ $event->image_url ?? asset('images/default-event.jpg') }}" 
+                                 class="event-img" 
+                                 alt="{{ $event->title }}"
+                                 onerror="this.src='{{ asset('images/logo.png') }}'">
+                             
+                            <div class="event-info">
+                                <p class="event-date">
+                                    📅 {{ \Carbon\Carbon::parse($event->start_date)->format('d M, Y') }} 
+                                </p>
 
-            </div>
+                                <h3 class="event-title">{{ $event->title }}</h3>
 
-        </form>
+                                <p class="event-description">
+                                    {{ \Illuminate\Support\Str::limit($event->description, 100) }}
+                                </p>
 
+                                <p class="event-location">📍 {{ $event->location }}</p>
+                                
+                                <p style="font-size: 0.9rem; color: green; font-weight:bold; margin-top: 10px;">
+                                    👉 Click para calificar equipos
+                                </p>
+                            </div>
+                        </button>
+                    </div>
+                @endforeach
+            @else
+                <div style="grid-column: 1 / -1; text-align: center; padding: 50px;">
+                    <h3>No hay eventos activos para calificar 😢</h3>
+                </div>
+            @endif
         </div>
     </section>
-
-    <!-- EVENTOS -->
-<section class="events">
-    <div class="events-header">
-        <h2>Eventos y concursos de tecnología</h2>
-        <a href="#" class="view-all">Ver todos los eventos →</a>
-    </div>
-
-    <div class="events-grid">
-        @if($events->count() > 0)
-            @foreach($events as $event)
-                <div class="event-card">
-                    <!-- Botón envolvente, actúa como un enlace -->
-                    <button 
-                        onclick="window.location='{{ route('juez') }}'" 
-                        class="card-link"
-                        style="all: unset; width: 100%; background: none; border: none; cursor: pointer;">
-                        <!-- El contenido de la tarjeta de evento sigue igual -->
-                        <img src="{{ $event->image_url ?? asset('images/default-event.jpg') }}" 
-                             class="event-img" 
-                             alt="{{ $event->title }}"
-                             onerror="this.src='{{ asset('images/logo.png') }}'">
-                             
-                        <div class="event-info">
-                            <p class="event-date">
-                                📅 {{ \Carbon\Carbon::parse($event->start_date)->format('d M, Y') }} 
-                                - {{ \Carbon\Carbon::parse($event->start_time)->format('H:i') }} hrs
-                            </p>
-
-                            <h3 class="event-title">{{ $event->title }}</h3>
-
-                            <p class="event-description">
-                                {{ \Illuminate\Support\Str::limit($event->description, 100) }}
-                            </p>
-
-                            <p class="event-location">📍 {{ $event->location }}</p>
-                            
-                            <p style="font-size: 0.8rem; color: #666; margin-top: 5px;">
-                                Organiza: {{ $event->organizer }}
-                            </p>
-                        </div>
-                    </button>
-                </div>
-            @endforeach
-        @else
-            <div style="grid-column: 1 / -1; text-align: center; padding: 50px;">
-                <h3>No hay eventos próximos 😢</h3>
-                <p>¡Sé el primero en crear uno!</p>
-            </div>
-        @endif
-    </div>
-</section>
-
-
 
     <footer class="footer">
         <div class="footer-grid">
             <div>
                 <h3>CodeVision</h3>
                 <p>Plataforma oficial del Instituto Tecnológico de Oaxaca.</p>
-            </div>
-            <div>
-                <h3>Enlaces Rápidos</h3>
-                <ul>
-                    <li>Inicio</li>
-                    <li>Eventos</li>
-                    <li>Categorías</li>
-                    <li>Calendario</li>
-                </ul>
-            </div>
-            <div>
-                <h3>Recursos</h3>
-                <ul>
-                    <li>Preguntas frecuentes</li>
-                    <li>Cómo inscribirse</li>
-                    <li>Políticas de evento</li>
-                </ul>
-            </div>
-            <div>
-                <h3>Contactos</h3>
-                <ul>
-                    <li>Inicio</li>
-                    <li>Eventos</li>
-                    <li>Categorías</li>
-                </ul>
             </div>
         </div>
         <p class="footer-copy">© {{ date('Y') }} CodeVision - Instituto Tecnológico de Oaxaca</p>
