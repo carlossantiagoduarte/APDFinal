@@ -24,7 +24,18 @@
     </nav>
 
     <div class="container">
-
+        {{-- Mensajes de Éxito o Error --}}
+        @if(session('success'))
+            <div style="background-color:#d4edda; color:#155724; padding:10px; border-radius:5px; margin-bottom: 15px; text-align: center;">
+                {{ session('success') }}
+            </div>
+        @endif
+        @if($errors->any())
+            <div style="background-color:#f8d7da; color:#721c24; padding:10px; border-radius:5px; margin-bottom: 15px; text-align: center;">
+                {{ $errors->first() }}
+            </div>
+        @endif
+        
         <h2>Evaluación del equipo</h2>
         <h2>{{ $equipo->event->title }}</h2>
 
@@ -49,8 +60,9 @@
             <p><strong>Archivo entregado:</strong></p>
 
             @if($equipo->project_file_path)
+                {{-- RUTA CORREGIDA: equipos.descargar -> events.download --}}
                 <a id="downloadBtn" 
-                   href="{{ route('equipos.descargar', $equipo->id) }}" 
+                   href="{{ route('events.download', $equipo->id) }}" 
                    class="btn download" 
                    target="_blank"> Descargar archivo del equipo
                 </a>
@@ -63,14 +75,15 @@
         </div>
 
         <div class="card">
-            <form action="{{ route('juez.calificar', $equipo->id) }}" method="POST" id="gradingForm">
+            {{-- RUTA CORREGIDA: juez.calificar -> judge.score --}}
+            <form action="{{ route('judge.score', $equipo->id) }}" method="POST" id="gradingForm">
                 @csrf
                 
                 <label>Calificación (0 - 100)</label>
                 <input type="number" name="score" id="score" 
-                       min="0" max="100" placeholder="Ej. 85" required
-                       value="{{ $miEvaluacion ? $miEvaluacion->score : '' }}"
-                       disabled>
+                        min="0" max="100" placeholder="Ej. 85" required
+                        value="{{ $miEvaluacion ? $miEvaluacion->score : '' }}"
+                        disabled>
 
                 <label style="margin-top: 15px; display: block;">Retroalimentación (Opcional)</label>
                 <textarea name="feedback" id="feedback" rows="3" 
@@ -79,11 +92,12 @@
                           disabled>{{ $miEvaluacion ? $miEvaluacion->feedback : '' }}</textarea>
 
                 <div class="buttons">
-                    <button type="button" id="editBtn" class="btn edit" disabled>Habilitar Calificación</button>
+                    {{-- El disabled se manejará completamente en JS --}}
+                    <button type="button" id="editBtn" class="btn edit">Habilitar Calificación</button>
                     
                     <button type="submit" id="saveBtn" class="btn save" disabled>Guardar Evaluación</button>
                     
-                    <button type="button" class="btn cancel" onclick="window.history.back()">Cancelar</button>
+                    <button type="button" class="btn cancel" onclick="window.location='{{ route('judge.teams', $equipo->event_id) }}'">Regresar</button>
                 </div>
             </form>
         </div>
@@ -102,41 +116,60 @@
         const feedbackInput = document.getElementById("feedback");
         const downloadMsg = document.getElementById("downloadMsg");
 
-        // Variable PHP pasada a JS para saber si ya calificó antes
+        // Variables PHP pasadas a JS
         const alreadyScored = @json($miEvaluacion ? true : false);
         const hasFile = @json($equipo->project_file_path ? true : false);
+        
+        // Función para Habilitar campos de calificación
+        const enableGrading = () => {
+            scoreInput.disabled = false;
+            feedbackInput.disabled = false;
+            saveBtn.disabled = false;
+            scoreInput.focus();
+            editBtn.style.display = 'none'; // Ocultamos el botón Habilitar
+        };
 
-        // Si ya calificó, permitimos editar directamente
+        // --- Lógica de Inicialización ---
+        
+        // 1. Si ya se calificó, permitimos editar directamente y habilitamos el botón de edición
         if (alreadyScored) {
-            editBtn.disabled = false;
             editBtn.innerText = "Editar Calificación";
+            editBtn.disabled = false; 
+            
+        } else if (hasFile) {
+            // 2. Si no ha calificado, pero hay archivo, habilitamos el botón para empezar a calificar/descargar
+            editBtn.innerText = "Empezar a Calificar";
+            editBtn.disabled = false; 
+        } else {
+             // 3. Si no hay archivo ni nota, bloqueamos el botón Habilitar
+             editBtn.innerText = "Esperando Entrega";
+             editBtn.disabled = true;
+             editBtn.style.backgroundColor = '#ccc';
         }
+
+
+        // --- Eventos ---
+        
+        // Botón "Habilitar/Editar"
+        editBtn.addEventListener("click", enableGrading);
 
         // Lógica de Descarga (Si hay archivo)
         if (downloadBtn) {
             downloadBtn.addEventListener("click", () => {
                 // Simulamos un pequeño delay para activar el botón
                 setTimeout(() => {
-                    editBtn.disabled = false;
+                    // Si no había nota, forzamos la activación del formulario después de la descarga
+                    if (!alreadyScored) {
+                         enableGrading();
+                    }
+                    
+                    // Retroalimentación visual de descarga
                     downloadMsg.style.display = "block";
                     downloadBtn.classList.add("done");
-                    downloadBtn.innerHTML = "✅ Volver a descargar";
+                    downloadBtn.innerHTML = "✅ Archivo descargado";
                 }, 1000);
             });
         }
-
-        // Botón "Habilitar/Calificar"
-        editBtn.addEventListener("click", () => {
-            scoreInput.disabled = false;
-            feedbackInput.disabled = false;
-            saveBtn.disabled = false;
-            scoreInput.focus();
-            
-            // Ocultamos el botón de editar para que solo quede Guardar
-            editBtn.style.display = 'none';
-        });
-
-        // (El envío del formulario lo maneja el botón submit automáticamente)
     </script>
 
 </body>
