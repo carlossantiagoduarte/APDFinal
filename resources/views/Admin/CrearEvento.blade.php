@@ -4,13 +4,33 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>New Event | CodeVision</title>
+    <title>Nuevo Evento | CodeVision</title>
+    
     <link rel="stylesheet" href="{{ asset('styles/event-register.css') }}">
     <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
     
     <link href="https://fonts.googleapis.com/css2?family=Jomolhari&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Jomolhari&family=Kadwa:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Jomolhari&family=Kadwa:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+
+    <style>
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+            margin: 20px 0 0 40px; /* Margen para separarlo del borde */
+            padding: 8px 12px;
+            border-radius: 5px;
+            transition: background 0.2s;
+            cursor: pointer;
+        }
+        .back-link:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
@@ -36,8 +56,10 @@
 
     <nav class="navbar">
         <div class="navbar-left">
-            <img src="{{ asset('images/logo.png') }}" class="logo">
-            <span class="site-title">CodeVision</span>
+            <a href="{{ route('dashboard.admin') }}" style="text-decoration: none; display: flex; align-items: center; color: inherit; gap: 10px;">
+                <img src="{{ asset('images/logo.png') }}" class="logo">
+                <span class="site-title">CodeVision</span>
+            </a>
         </div>
 
         <div class="user-menu-container">
@@ -47,15 +69,24 @@
                     <polyline points="6 9 12 15 18 9" />
                 </svg>
             </div>
+            
             <div id="user-menu" class="dropdown">
                 <a href="{{ route('dashboard.admin') }}">Inicio</a>
-                <form action="{{ route('logout') }}" method="POST" style="display: inline;">
+                <a href="{{ route('editarperfil') }}">Perfil</a> <form action="{{ route('logout') }}" method="POST" style="display: inline;">
                     @csrf
                     <a href="#" onclick="this.closest('form').submit();">Cerrar sesión</a>
                 </form>
             </div>
         </div>
     </nav>
+
+    <a href="javascript:history.back()" class="back-link">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        Regresar
+    </a>
 
     <section class="hero">
         <h2 class="hero-title">¡Registra un nuevo Evento!</h2>
@@ -76,19 +107,36 @@
             @endif
 
             <form id="eventForm" action="{{ route('events.store') }}" method="POST">
-                @csrf <div class="step active" id="step1">
+                @csrf 
+                
+                <div class="step active" id="step1">
                     <div class="form-row">
                         <div class="form-group">
                             <label>Nombre del Evento</label>
-                            <input type="text" name="title" placeholder="Ej: Hackatec" value="{{ old('title') }}" required>
+                            <input type="text" name="title" placeholder="Ej: Hackatec 2025" value="{{ old('title') }}" required>
                         </div>
                         <div class="form-group">
-                            <label>Organización o Responsable</label>
+                            <label>Categoría Principal <span style="font-size:0.8em; color:gray;">(Nuevo)</span></label>
+                            <input type="text" name="main_category" placeholder="Ej: Tecnología, IA..." value="{{ old('main_category') }}" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Organización / Responsable</label>
                             <input type="text" name="organizer" placeholder="Nombre del Organizador" value="{{ old('organizer') }}" required>
                         </div>
                         <div class="form-group">
+                            <label>Modalidad <span style="font-size:0.8em; color:gray;">(Nuevo)</span></label>
+                            <select name="modality" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;" required>
+                                <option value="Presencial">Presencial</option>
+                                <option value="Virtual">Virtual</option>
+                                <option value="Híbrido">Híbrido</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
                             <label>Lugar</label>
-                            <input type="text" name="location" placeholder="Ej: Auditorio principal ITO" value="{{ old('location') }}" required>
+                            <input type="text" name="location" placeholder="Ej: Auditorio principal" value="{{ old('location') }}" required>
                         </div>
                     </div>
 
@@ -98,20 +146,20 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label>Correo Electrónico</label>
-                            <input type="email" name="email" placeholder="example@gmail.com" value="{{ old('email') }}" required>
+                            <input type="email" name="email" placeholder="contacto@evento.com" value="{{ old('email') }}" required>
                         </div>
                         <div class="form-group">
                             <label>Número de contacto</label>
-                            <input type="text" name="phone" placeholder="+52 951-123-4567" value="{{ old('phone') }}" required>
+                            <input type="text" name="phone" placeholder="+52 951..." value="{{ old('phone') }}" required>
                         </div>
                         <div class="form-group">
-                            <label>Capacidad máxima</label>
-                            <input type="number" name="max_participants" placeholder="Número total" value="{{ old('max_participants') }}" required>
+                            <label>Capacidad</label>
+                            <input type="number" name="max_participants" placeholder="Ej: 200" value="{{ old('max_participants') }}" required>
                         </div>
                     </div>
 
                     <label>Requisitos de participación</label>
-                    <textarea name="requirements" placeholder="Requisitos...">{{ old('requirements') }}</textarea>
+                    <textarea name="requirements" placeholder="Lista de requisitos...">{{ old('requirements') }}</textarea>
 
                     <div class="buttons">
                         <button type="button" id="cancelBtn1" onclick="window.location='{{ route('dashboard.admin') }}'">Cancelar</button>
@@ -129,14 +177,7 @@
                             <label>Fecha de Finalización</label>
                             <input type="date" name="end_date" value="{{ old('end_date') }}" required>
                         </div>
-                        <div class="form-group">
-                            <label>URL de la imagen del Evento</label>
-                            <input type="url" name="image_url" placeholder="https://ejemplo.com/image.jpg" value="{{ old('image_url') }}">
-                        </div>
                     </div>
-
-                    <label>Documentos adjuntos (Info extra)</label>
-                    <textarea name="documents_info" placeholder="Información sobre documentos...">{{ old('documents_info') }}</textarea>
 
                     <div class="form-row">
                         <div class="form-group">
@@ -148,6 +189,25 @@
                             <input type="time" name="end_time" value="{{ old('end_time') }}" required>
                         </div>
                     </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Imagen Cuadrada (URL)</label>
+                            <input type="url" name="image_url" placeholder="https://..." value="{{ old('image_url') }}">
+                        </div>
+                        <div class="form-group">
+                            <label>Banner Horizontal (URL) <span style="font-size:0.8em; color:gray;">(Nuevo)</span></label>
+                            <input type="url" name="banner_url" placeholder="https://..." value="{{ old('banner_url') }}">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Link de Registro Externo (Opcional) <span style="font-size:0.8em; color:gray;">(Nuevo)</span></label>
+                        <input type="url" name="registration_link" placeholder="https://forms.google.com/..." value="{{ old('registration_link') }}">
+                    </div>
+
+                    <label>Documentos adjuntos / Info Extra</label>
+                    <textarea name="documents_info" placeholder="Enlaces a PDFs o información adicional...">{{ old('documents_info') }}</textarea>
 
                     <div class="buttons">
                         <button type="button" id="cancelBtn2" onclick="window.location='{{ route('dashboard.admin') }}'">Cancelar</button>
@@ -165,12 +225,10 @@
         const prevBtn = document.getElementById('prevBtn');
         const step1 = document.getElementById('step1');
         const step2 = document.getElementById('step2');
-        const form = document.getElementById('eventForm'); // Solo para el reset, NO para el submit
+        const form = document.getElementById('eventForm');
 
-        // Función para ir al siguiente paso
         nextBtn.addEventListener('click', () => {
-            // Validación simple para que no pase si está vacío
-            const inputs = step1.querySelectorAll('input[required], textarea[required]');
+            const inputs = step1.querySelectorAll('input[required], textarea[required], select[required]');
             let valid = true;
             inputs.forEach(input => {
                 if(!input.value) {
@@ -189,30 +247,17 @@
             }
         });
 
-        // Función para regresar al paso anterior
         prevBtn.addEventListener('click', () => {
             step2.classList.remove('active');
             step1.classList.add('active');
         });
-
-        // Función para cancelar (Solo resetea, no evita envío porque el botón cancelar es type="button")
-        function resetForm() {
-            if (confirm("¿Seguro que quieres cancelar? Se borrará toda la información.")) {
-                form.reset(); 
-                step2.classList.remove('active');
-                step1.classList.add('active');
-            }
-        }
-        
-        // NOTA: NO HAY addEventListener('submit') AQUÍ.
-        // Eso permite que Laravel reciba los datos.
     </script>
 
     <footer class="footer">
         <div class="footer-grid">
             <div>
                 <h3>CodeVision</h3>
-                <p>Plataforma oficial del Instituto Tecnológico de Oaxaca para gestión de eventos tecnológicos.</p>
+                <p>Plataforma oficial del Instituto Tecnológico de Oaxaca.</p>
             </div>
             <div>
                 <h3>Enlaces Rápidos</h3>
