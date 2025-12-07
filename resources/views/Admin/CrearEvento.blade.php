@@ -21,7 +21,7 @@
             text-decoration: none;
             color: #333;
             font-weight: bold;
-            margin: 20px 0 0 40px; /* Margen para separarlo del borde */
+            margin: 20px 0 0 40px;
             padding: 8px 12px;
             border-radius: 5px;
             transition: background 0.2s;
@@ -29,6 +29,10 @@
         }
         .back-link:hover {
             background-color: #f0f0f0;
+        }
+        /* Estilo para ocultar/mostrar suavemente */
+        .hidden {
+            display: none;
         }
     </style>
 
@@ -72,7 +76,8 @@
             
             <div id="user-menu" class="dropdown">
                 <a href="{{ route('dashboard.admin') }}">Inicio</a>
-                <a href="{{ route('editarperfil') }}">Perfil</a> <form action="{{ route('logout') }}" method="POST" style="display: inline;">
+                <a href="{{ route('editarperfil') }}">Perfil</a>
+                <form action="{{ route('logout') }}" method="POST" style="display: inline;">
                     @csrf
                     <a href="#" onclick="this.closest('form').submit();">Cerrar sesión</a>
                 </form>
@@ -115,9 +120,25 @@
                             <label>Nombre del Evento</label>
                             <input type="text" name="title" placeholder="Ej: Hackatec 2025" value="{{ old('title') }}" required>
                         </div>
+                        
                         <div class="form-group">
                             <label>Categoría Principal <span style="font-size:0.8em; color:gray;">(Nuevo)</span></label>
-                            <input type="text" name="main_category" placeholder="Ej: Tecnología, IA..." value="{{ old('main_category') }}" required>
+                            
+                            <select id="categorySelect" name="main_category" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;" required>
+                                <option value="" disabled selected>Selecciona una categoría</option>
+                                <option value="Tecnología">Tecnología</option>
+                                <option value="Programación">Programación</option>
+                                <option value="Ciberseguridad">Ciberseguridad</option>
+                                <option value="Inteligencia Artificial">Inteligencia Artificial</option>
+                                <option value="Diseño UI/UX">Diseño UI/UX</option>
+                                <option value="Robótica">Robótica</option>
+                                <option value="Otro">Otro (Escribir manualmente)</option>
+                            </select>
+
+                            <input type="text" id="otherCategoryInput" name="other_category" 
+                                   placeholder="Escribe el nombre de la categoría..." 
+                                   style="margin-top: 10px; display: none;" 
+                                   class="hidden">
                         </div>
                     </div>
 
@@ -225,13 +246,32 @@
         const prevBtn = document.getElementById('prevBtn');
         const step1 = document.getElementById('step1');
         const step2 = document.getElementById('step2');
-        const form = document.getElementById('eventForm');
+        
+        // Elementos para la lógica de "Otro"
+        const categorySelect = document.getElementById('categorySelect');
+        const otherCategoryInput = document.getElementById('otherCategoryInput');
+
+        // Escuchar cambios en el Select
+        categorySelect.addEventListener('change', function() {
+            if (this.value === 'Otro') {
+                otherCategoryInput.style.display = 'block'; // Mostrar
+                otherCategoryInput.required = true;         // Hacer obligatorio
+                otherCategoryInput.focus();
+            } else {
+                otherCategoryInput.style.display = 'none';  // Ocultar
+                otherCategoryInput.required = false;        // Quitar obligatorio
+                otherCategoryInput.value = '';              // Limpiar
+            }
+        });
 
         nextBtn.addEventListener('click', () => {
-            const inputs = step1.querySelectorAll('input[required], textarea[required], select[required]');
+            // Validamos solo los campos visibles
+            // El truco es que si el input "Otro" está oculto, no molestará
+            const inputs = step1.querySelectorAll('input:not([style*="display: none"]), select, textarea');
+            
             let valid = true;
             inputs.forEach(input => {
-                if(!input.value) {
+                if(input.hasAttribute('required') && !input.value) {
                     valid = false;
                     input.style.border = "2px solid red";
                 } else {
