@@ -107,6 +107,9 @@ Route::middleware(['auth'])->group(function () {
         return redirect()->route('dashboard.admin');
     })->name('admin');
 
+    // Ruta para descargar PDF
+    Route::get('/evento/{id}/reporte-pdf', [AdminController::class, 'descargarReporte'])->name('events.pdf');
+
 
     /*
     |--------------------------------------------------------------------------
