@@ -6,7 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard Juez | CodeVision</title>
     
-    <link rel="stylesheet" href="{{ asset('styles/dashboard.css') }}">
+    {{-- RUTA CORREGIDA: Usar asset() para CSS --}}
+    <link rel="stylesheet" href="{{ asset('styles/dashboard.css') }}"> 
+    {{-- RUTA CORREGIDA: Usar asset() para icono --}}
     <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
     
     <link href="https://fonts.googleapis.com/css2?family=Jomolhari&display=swap" rel="stylesheet">
@@ -37,6 +39,7 @@
 
     <nav class="navbar">
         <div class="navbar-left">
+            {{-- RUTA CORREGIDA: Usar asset() para el logo --}}
             <img src="{{ asset('images/logo.png') }}" class="logo" alt="CodeVision Logo">
             <span class="site-title">CodeVision (Juez)</span>
         </div>
@@ -50,14 +53,15 @@
             </div>
 
             <div id="user-menu" class="dropdown">
-                <a href="{{ route('dashboard.juez') }}">
+                <a href="{{ route('dashboard.juez') }}" style="background-color: #f0f0f0;">
                     <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M3 9.5L12 3l9 6.5V21H3z" />
                     </svg>
                     Inicio
                 </a>
 
-                <a href="{{ route('editarperfil') }}">
+                {{-- RUTA CORREGIDA: editarperfil -> profile.edit --}}
+                <a href="{{ route('profile.edit') }}" style="display: flex; align-items: center; gap: 10px;">
                     <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="7" r="4" />
                         <path d="M5.5 21a6.5 6.5 0 0 1 13 0" />
@@ -86,25 +90,32 @@
 
     <section class="events">
         <div class="events-header">
-            <h2>Selecciona un evento</h2>
+            <h2>Eventos y Resultados Recientes</h2>
         </div>
 
         <div class="events-grid">
-            @if($events->count() > 0)
+            @if(isset($events) && $events->count() > 0)
                 @foreach($events as $event)
                     <div class="event-card">
                         
+                        {{-- RUTA OK: judge.teams --}}
                         <button 
-                            onclick="window.location='{{ route('juez.equipos', $event->id) }}'" 
+                            onclick="window.location='{{ route('judge.teams', $event->id) }}'" 
                             class="card-link"
                             style="all: unset; width: 100%; background: none; border: none; cursor: pointer;">
                             
                             <img src="{{ $event->image_url ?? asset('images/default-event.jpg') }}" 
                                  class="event-img" 
                                  alt="{{ $event->title }}"
+                                 loading="lazy"
                                  onerror="this.src='{{ asset('images/logo.png') }}'">
-                             
+                            
                             <div class="event-info">
+                                @if(!$event->is_active)
+                                    <p style="color: #d9534f; font-weight: bold; margin-bottom: 5px;">
+                                        🛑 Evento Finalizado
+                                    </p>
+                                @endif
                                 <p class="event-date">
                                     📅 {{ \Carbon\Carbon::parse($event->start_date)->format('d M, Y') }} 
                                 </p>
@@ -116,7 +127,7 @@
                                 </p>
 
                                 <p class="event-location">📍 {{ $event->location }}</p>
-                                
+                                    
                                 <p style="font-size: 0.9rem; color: green; font-weight:bold; margin-top: 10px;">
                                     👉 Click para calificar equipos
                                 </p>
@@ -143,4 +154,5 @@
     </footer>
 
 </body>
+
 </html>
