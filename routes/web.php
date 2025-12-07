@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Juez\JuezController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -90,6 +91,12 @@ Route::middleware(['auth'])->group(function () {
         
         // Dashboard
         Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard.admin');
+
+        Route::get('/gestion', function () {
+    return view('Admin.GestionUsuarios');
+})->name('gestion');
+
+Route::get('/gestion', [AdminController::class, 'gestionUsuarios'])->name('gestion');
 
         // Gestión de Eventos (CRUD)
         Route::controller(AdminController::class)->prefix('eventos')->group(function () {
