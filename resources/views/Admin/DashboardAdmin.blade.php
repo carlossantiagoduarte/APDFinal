@@ -57,7 +57,7 @@
                     Inicio
                 </a>
 
-                <a href="{{ route('editarperfil') }}">
+                <a href="{{ route('profile.edit') }}">
                     Perfil
                 </a>
 
@@ -117,7 +117,7 @@
 
     <section class="events">
         <div class="events-header">
-            <h2>Eventos y concursos de tecnología</h2>
+            <h2>Eventos y Resultados Recientes</h2>
             <a href="#" class="view-all">Ver todos los eventos →</a>
         </div>
 
@@ -126,7 +126,7 @@
                 @foreach($events as $event)
                     <div class="event-card">
                         <button 
-                            onclick="window.location='{{ route('evento.resultados', $event->id) }}'" 
+                            onclick="window.location='{{ route('events.results', $event->id) }}'" 
                             class="card-link"
                             style="all: unset; width: 100%; background: none; border: none; cursor: pointer;">
                             
@@ -149,6 +149,12 @@
 
                                 <p class="event-location">📍 {{ $event->location }}</p>
                                 
+                                @if(!$event->is_active)
+                                    <p style="color: #d9534f; font-weight: bold; margin-top: 10px;">
+                                        🛑 Evento Finalizado
+                                    </p>
+                                @endif
+                                  
                                 <p style="font-size: 0.8rem; color: #666; margin-top: 5px;">
                                     Organiza: {{ $event->organizer }}
                                 </p>
@@ -201,4 +207,5 @@
     </footer>
 
 </body>
+
 </html>
