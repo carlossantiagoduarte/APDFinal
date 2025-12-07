@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <title>{{ $event->title }} | CodeVision</title>
@@ -303,7 +302,8 @@
                 <div class="event-meta">
                     <span>📍 {{ $event->location }}</span>
                     <span>📅 {{ \Carbon\Carbon::parse($event->start_date)->format('d M, Y') }}</span>
-                    <span>👥 Capacidad: {{ $teams->count() * 5 }} / {{ $event->max_participants }}</span>
+                    {{-- CORRECCIÓN: Muestra el número de equipos / Capacidad Máxima --}}
+                    <span>👥 Equipos: {{ $teams->count() }} / Máx: {{ $event->max_participants }}</span>
                 </div>
             </div>
             <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 10px;">
@@ -316,81 +316,123 @@
             </div>
         </div>
 
+        @if (isset($ganadores) && $ganadores->isNotEmpty())
+            <section class="podium-section"
+                style="margin-bottom: 40px; text-align: center; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                <h2 style="font-family: 'Jomolhari', serif; color: #1a1a1a; margin-bottom: 20px;">
+                    🥇 PODIO OFICIAL 🥈
+                </h2>
+
+                <div style="display: flex; justify-content: center; gap: 30px; align-items: flex-end;">
+
+                    @if (isset($ganadores[1]))
+                        <div
+                            style="width: 150px; height: 180px; background-color: #c0c0c0; border-radius: 8px 8px 0 0; padding-top: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">
+                            <div style="font-size: 2.5rem;">🥈</div>
+                            <p style="font-weight: bold; margin: 5px 0;">{{ $ganadores[1]->name }}</p>
+                            <small style="color: #444;">2do Lugar</small>
+                        </div>
+                    @endif
+
+                    @if (isset($ganadores[0]))
+                        <div
+                            style="width: 170px; height: 220px; background-color: #ffd700; border-radius: 8px 8px 0 0; padding-top: 10px; position: relative; top: -20px; box-shadow: 0 8px 20px rgba(0,0,0,0.3);">
+                            <div style="font-size: 3rem;">🥇</div>
+                            <p style="font-weight: bold; margin: 10px 0;">{{ $ganadores[0]->name }}</p>
+                            <small style="color: #444;">1er Lugar</small>
+                        </div>
+                    @endif
+
+                    @if (isset($ganadores[2]))
+                        <div
+                            style="width: 150px; height: 150px; background-color: #cd7f32; border-radius: 8px 8px 0 0; padding-top: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">
+                            <div style="font-size: 2.5rem;">🥉</div>
+                            <p style="font-weight: bold; margin: 5px 0;">{{ $ganadores[2]->name }}</p>
+                            <small style="color: #444;">3er Lugar</small>
+                        </div>
+                    @endif
+                </div>
+            </section>
+        @endif
+
         <div class="action-box">
             @if ($miEquipo)
                 <h2>Eres parte del equipo "{{ $miEquipo->name }}"</h2>
                 <p>Tu equipo ya está registrado en este evento. Accede al panel de entrega para gestionar tu proyecto.
                 </p>
-                <a href="{{ route('entrega.proyecto', $miEquipo->id) }}" class="btn-action btn-upload">
+                {{-- RUTA CORREGIDA: delivery.view --}}
+                <a href="{{ route('delivery.view', $miEquipo->id) }}" class="btn-action btn-upload">
                     Ir a Entregar Proyecto
                 </a>
-                <a href="{{ route('estudiante.constancia', $event->id) }}" class="btn-action"
+                {{-- RUTA CORREGIDA: student.certificate --}}
+                <a href="{{ route('student.certificate', $event->id) }}" class="btn-action"
                     style="background-color: #eab308; color: black;">
                     🎓 Descargar Constancia
                 </a>
+            @elseif ($yaInicio)
+                <h2>El evento ha comenzado</h2>
+                <p>Lo sentimos, el periodo de inscripción ha finalizado. Puedes ver la lista de participantes abajo.</p>
+                <button class="btn-action btn-secondary" style="opacity: 0.5; cursor: not-allowed;">Inscripción Cerrada</button>
+            @else
+                <h2>¿Listo para participar?</h2>
+                <p>Aún no tienes equipo en este evento. Crea uno nuevo o únete a uno existente.</p>
+                <div style="display: flex; justify-content: center; gap: 15px;">
+                    {{-- RUTA CORREGIDA: teams.create --}}
+                    <a href="{{ route('teams.create', ['event_id' => $event->id]) }}" class="btn-action btn-primary">
+                        ➕ Crear Equipo
+                    </a>
+                    {{-- RUTA CORREGIDA: teams.join.view --}}
+                    <a href="{{ route('teams.join.view') }}" class="btn-action btn-secondary">
+                        🔍 Unirse a Equipo
+                    </a>
+                </div>
+            @endif
         </div>
-    @elseif ($yaInicio)
-        <h2>El evento ha comenzado</h2>
-        <p>Lo sentimos, el periodo de inscripción ha finalizado. Puedes ver la lista de participantes abajo.</p>
-        <button class="btn-action btn-secondary" style="opacity: 0.5; cursor: not-allowed;">Inscripción Cerrada</button>
-    @else
-        <h2>¿Listo para participar?</h2>
-        <p>Aún no tienes equipo en este evento. Crea uno nuevo o únete a uno existente.</p>
-        <div style="display: flex; justify-content: center; gap: 15px;">
-            <a href="{{ route('crearequipo', ['event_id' => $event->id]) }}" class="btn-action btn-primary">
-                ➕ Crear Equipo
-            </a>
-            <a href="{{ route('unirseaequipo') }}" class="btn-action btn-secondary">
-                🔍 Unirse a Equipo
-            </a>
+
+        <div class="section-title">
+            <span>Equipos Participantes ({{ $teams->count() }})</span>
         </div>
-        @endif
-    </div>
 
-    <div class="section-title">
-        <span>Equipos Participantes ({{ $teams->count() }})</span>
-    </div>
-
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>Nombre del Equipo</th>
-                    <th>Líder</th>
-                    <th>Miembros</th>
-                    <th>Estado Proyecto</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($teams as $team)
-                    <tr class="{{ $miEquipo && $miEquipo->id == $team->id ? 'my-team-row' : '' }}">
-                        <td>
-                            <strong>{{ $team->name }}</strong>
-                            @if ($miEquipo && $miEquipo->id == $team->id)
-                                <span style="font-size:0.75rem; color:#3b82f6; margin-left:5px; font-weight:bold;">(TU
-                                    EQUIPO)</span>
-                            @endif
-                        </td>
-                        <td>{{ $team->leader_name }}</td>
-                        <td>{{ $team->users->count() }} / {{ $team->max_members }}</td>
-                        <td>
-                            @if ($team->project_file_path)
-                                <span class="badge-status badge-done">✅ Entregado</span>
-                            @else
-                                <span class="badge-status badge-pending">⏳ Pendiente</span>
-                            @endif
-                        </td>
-                    </tr>
-                @empty
+        <div class="table-container">
+            <table>
+                <thead>
                     <tr>
-                        <td colspan="4" style="text-align: center; padding: 40px; color: #888;">
-                            Aún no hay equipos registrados. ¡Sé el primero en inscribirte!
-                        </td>
+                        <th>Nombre del Equipo</th>
+                        <th>Líder</th>
+                        <th>Miembros</th>
+                        <th>Estado Proyecto</th>
                     </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
+                </thead>
+                <tbody>
+                    @forelse($teams as $team)
+                        <tr class="{{ $miEquipo && $miEquipo->id == $team->id ? 'my-team-row' : '' }}">
+                            <td>
+                                <strong>{{ $team->name }}</strong>
+                                @if ($miEquipo && $miEquipo->id == $team->id)
+                                    <span style="font-size:0.75rem; color:#3b82f6; margin-left:5px; font-weight:bold;">(TU
+                                        EQUIPO)</span>
+                                @endif
+                            </td>
+                            <td>{{ $team->leader_name }}</td>
+                            <td>{{ $team->users->count() }} / {{ $team->max_members }}</td>
+                            <td>
+                                @if ($team->project_file_path)
+                                    <span class="badge-status badge-done">✅ Entregado</span>
+                                @else
+                                    <span class="badge-status badge-pending">⏳ Pendiente</span>
+                                @endif
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: 40px; color: #888;">
+                                Aún no hay equipos registrados. ¡Sé el primero en inscribirte!
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
 
     </div>
 
