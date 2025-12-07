@@ -7,44 +7,51 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Event;
-use App\Models\Team; // Importante: Ya está aquí.
+use App\Models\Team;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class EventController extends Controller
 {
-    // 1. Mostrar la vista de entrega para UN equipo específico
-    public function vistaEntrega($team_id)
+    /**
+     * 1. Mostrar la vista de entrega para UN equipo específico.
+     * @param \App\Models\Team $team Usando Implicit Model Binding
+     */
+    public function vistaEntrega(Team $team) // Usando Model Binding
     {
         $user = Auth::user();
 
-        // Buscamos el equipo y verificamos que el usuario pertenezca a él (Seguridad)
-        $equipo = Team::where('id', $team_id)
+        // Verificamos que el usuario pertenezca al equipo solicitado (Seguridad)
+        // firstOrFail lanza 404 si el equipo no se encuentra O si el usuario no pertenece a él.
+        $equipo = Team::where('id', $team->id)
             ->whereHas('users', function ($q) use ($user) {
                 $q->where('user_id', $user->id);
             })->firstOrFail();
 
         // Pasamos el equipo específico a la vista
-        // La vista Estudiante.EntregaProyecto usa $equipo->event->title
-        // Laravel cargará la relación event automáticamente
         return view('Estudiante.EntregaProyecto', compact('equipo'));
     }
 
-    // 2. Subir archivo a UN equipo específico (Usando el team_id de la ruta)
-    public function subirArchivo(Request $request, $team_id)
+    /**
+     * 2. Subir archivo a UN equipo específico.
+     * @param \App\Models\Team $team Usando Implicit Model Binding
+     */
+    public function subirArchivo(Request $request, Team $team) // Usando Model Binding
     {
         $request->validate([
-            'archivo_proyecto' => 'required|file|max:10240',
+            // Máximo 10 MB (10240 KB)
+            'archivo_proyecto' => 'required|file|max:10240|mimes:zip,rar,pdf,doc,docx', 
         ]);
 
         $user = Auth::user();
 
         // Validamos propiedad del equipo nuevamente por seguridad
-        $equipo = Team::where('id', $team_id)
+        $equipo = Team::where('id', $team->id)
             ->whereHas('users', function ($q) use ($user) {
                 $q->where('user_id', $user->id);
             })->firstOrFail();
 
+        // Guardamos el archivo y obtenemos la ruta relativa
         $path = $request->file('archivo_proyecto')->store('proyectos', 'public');
 
         $equipo->project_file_path = $path;
@@ -53,45 +60,71 @@ class EventController extends Controller
         return back()->with('success', 'Archivo subido correctamente al equipo: ' . $equipo->name);
     }
 
-    // 3. Dashboard del Estudiante con Búsqueda
+    /**
+     * 3. Dashboard del Estudiante con Búsqueda (Versión simplificada)
+     * NOTA: Este método está bien aquí para el Estudiante, pero la lógica de Dashboards de Juez/Admin
+     * debería estar en sus respectivos controladores.
+     */
     public function dashboardEstudiante(Request $request)
     {
-        $query = Event::where('is_active', true);
+        $timeLimit = Carbon::now()->subDay(); 
 
-        // Lógica del buscador
+        $activos = Event::where('is_active', true);
+        $recientes = Event::where('is_active', false)->where('updated_at', '>', $timeLimit);
+        $archivados = Event::where('is_active', false)->where('updated_at', '<=', $timeLimit); // CORREGIDO: Usar <= para evitar solapamiento
+        
+        // Aplicamos filtro de búsqueda a los Builders
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function ($q) use ($search) {
+            $filter = function($q) use ($search) {
                 $q->where('title', 'LIKE', "%{$search}%")
-                    ->orWhere('location', 'LIKE', "%{$search}%")
-                    ->orWhere('main_category', 'LIKE', "%{$search}%");
-            });
+                  ->orWhere('location', 'LIKE', "%{$search}%")
+                  ->orWhere('main_category', 'LIKE', "%{$search}%");
+            };
+            
+            $activos->where($filter);
+            $recientes->where($filter);
+            $archivados->where($filter);
         }
-
-        $events = $query->orderBy('start_date', 'asc')->get();
+        
+        // Juntamos los resultados usando UNION (requiere getQuery() en el segundo builder)
+        // La consulta final debe ser una sola query que une los builders
+        $events = $activos
+                    ->union($recientes->getQuery())
+                    ->union($archivados->getQuery())
+                    ->orderBy('start_date', 'asc')
+                    ->get();
 
         return view('Estudiante.DashboardEstudiante', compact('events'));
     }
 
-    // 4. Ver Detalles del Evento (Solo Lectura)
-    public function show($id)
+    // ----------------------------------------------------------------------------------
+    // NOTA: Se eliminaron las funciones dashboardJuez y dashboardAdmin de este controlador,
+    // ya que su lógica es responsabilidad de JuezController y AdminController, respectivamente.
+    // ----------------------------------------------------------------------------------
+
+    /**
+     * 4. Ver Detalles del Evento (Solo Lectura).
+     * @param \App\Models\Event $event Usando Implicit Model Binding
+     */
+    public function show(Event $event) // Usando Model Binding
     {
-        $event = Event::findOrFail($id);
         return view('Eventos.DetallesEvento', compact('event'));
     }
 
-    // 5. Panel principal del evento para el estudiante (HUB)
-    public function verEventoEstudiante($id)
+    /**
+     * 5. Panel principal del evento para el estudiante (HUB).
+     * @param \App\Models\Event $event Usando Implicit Model Binding
+     */
+    public function verEventoEstudiante(Event $event) // Usando Model Binding
     {
         $user = Auth::user();
-        $event = Event::findOrFail($id);
-
+        
         // 1. Obtener equipos inscritos en este evento
-        // Usamos with('users') para el conteo de miembros en la vista
-        $teams = Team::where('event_id', $id)->with('users')->get();
+        $teams = Team::where('event_id', $event->id)->with('users')->get();
 
         // 2. Verificar si el usuario YA pertenece a un equipo de este evento
-        $miEquipo = Team::where('event_id', $id)
+        $miEquipo = Team::where('event_id', $event->id)
             ->whereHas('users', function ($q) use ($user) {
                 $q->where('user_id', $user->id);
             })->first();
@@ -100,31 +133,40 @@ class EventController extends Controller
         $inicioEvento = Carbon::parse($event->start_date . ' ' . $event->start_time);
         $yaInicio = now()->greaterThanOrEqualTo($inicioEvento);
 
-        return view('Estudiante.VerEvento', compact('event', 'teams', 'miEquipo', 'yaInicio'));
+        // 4. Obtener los ganadores (equipos con lugar 1, 2 o 3)
+        $ganadores = Team::where('event_id', $event->id)
+                     ->whereIn('place', [1, 2, 3])
+                     ->orderBy('place', 'asc') 
+                     ->get();
+        
+        return view('Estudiante.VerEvento', compact('event', 'teams', 'miEquipo', 'yaInicio', 'ganadores'));
     }
 
-    // 6. Función para DESCARGAR (Juez/Admin)
-    public function descargarArchivo($team_id)
+    /**
+     * 6. Función para DESCARGAR Proyecto (Juez/Admin).
+     * @param \App\Models\Team $team Usando Implicit Model Binding
+     */
+    public function descargarArchivo(Team $team) // Usando Model Binding
     {
-        $equipo = Team::findOrFail($team_id);
-
-        if (!$equipo->project_file_path) {
-            // Si el archivo no existe en la BD, lo devolvemos a la página anterior con error
+        if (!$team->project_file_path) {
             return back()->withErrors('Este equipo no ha subido ningún archivo aún.');
         }
 
         // Descarga segura desde storage
-        return Storage::download($equipo->project_file_path);
+        // Nota: Asegúrate de que 'public' sea el disco configurado por defecto para descargas
+        return Storage::download($team->project_file_path, $team->name . '_proyecto.' . pathinfo($team->project_file_path, PATHINFO_EXTENSION));
     }
 
-    // 7. Generar Constancia Individual
-    public function descargarConstancia($id)
+    /**
+     * 7. Generar Constancia Individual.
+     * @param \App\Models\Event $event Usando Implicit Model Binding
+     */
+    public function descargarConstancia(Event $event) // Usando Model Binding
     {
         $user = Auth::user();
-        $event = Event::findOrFail($id);
 
-        // 1. Verificar si el usuario realmente participó y cargar las evaluaciones asociadas
-        $participacion = Team::where('event_id', $id)
+        // 1. Verificar si el usuario realmente participó en un equipo de este evento
+        $participacion = Team::where('event_id', $event->id)
             ->whereHas('users', function ($q) use ($user) {
                 $q->where('user_id', $user->id);
             })
@@ -141,16 +183,15 @@ class EventController extends Controller
 
         $averageScore = $evaluations->isNotEmpty()
             ? round($evaluations->avg('score'), 1)
-            : 'N/A'; // Si no hay calificaciones, muestra N/A
+            : 'N/A';
 
         // 3. Generar el PDF (Horizontal)
-        // Pasamos las evaluaciones y el promedio a la vista
         $pdf = Pdf::loadView(
             'Estudiante.ConstanciaPDF',
             compact('user', 'event', 'participacion', 'evaluations', 'averageScore')
         )
             ->setPaper('a4', 'landscape');
 
-        return $pdf->download('Constancia_' . $user->name . '.pdf');
+        return $pdf->download('Constancia_' . $user->name . '_' . $event->title . '.pdf');
     }
 }
