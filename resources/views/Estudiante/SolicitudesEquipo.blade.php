@@ -51,9 +51,8 @@
 
             <!-- NOMBRE DEL USUARIO -->
             <div id="user-toggle" class="user-name">
-               {{ auth()->user()->name }}  <!-- Mostrar nombre del usuario desde la base de datos -->
+                {{ Auth::user()->name }} {{ Auth::user()->lastname ?? '' }}
 
-                <!-- FLECHITA -->
                 <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="6 9 12 15 18 9" />
@@ -67,7 +66,7 @@
                         stroke-linejoin="round">
                         <path d="M3 9.5L12 3l9 6.5V21H3z" />
                     </svg>
-                    Inicio
+                    Inicio (Estudiante)
                 </a>
 
                 <a href="{{ route('editarperfil') }}"> <!-- Enlace actualizado al perfil -->
@@ -77,16 +76,6 @@
                         <path d="M5.5 21a6.5 6.5 0 0 1 13 0" />
                     </svg>
                     Perfil
-                </a>
-
-                <a href=""> <!-- Enlace actualizado a las solicitudes -->
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                        stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="9" />
-                        <path d="M8 12l3 3 5-6" />
-                    </svg>
-                    </svg>
-                    Solicitudes
                 </a>
 
                 <!-- Formulario de Logout -->
