@@ -1,14 +1,69 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Evaluar: {{ $equipo->name }} | CodeVision</title>
-    
-    <link rel="stylesheet" href="{{ asset('styles/calificar.css') }}">
+    <title>Entrega de Proyecto | CodeVision</title>
+
+    <link rel="stylesheet" href="{{ asset('styles/envio.css') }}">
     <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
-    
-    <link href="https://fonts.googleapis.com/css2?family=Jomolhari&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css2?family=Jomolhari&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Jomolhari&family=Kadwa:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+        rel="stylesheet">
+
+    <style>
+        .alert {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Estilos para feedback del juez */
+        .judge-feedback {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fff3cd;
+            border: 1px solid #ffeeba;
+            border-radius: 8px;
+            color: #856404;
+        }
+    </style>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const toggle = document.getElementById("user-toggle");
+            const menu = document.getElementById("user-menu");
+
+            toggle.addEventListener("click", () => {
+                toggle.classList.toggle("active");
+                menu.classList.toggle("show");
+            });
+
+            document.addEventListener("click", (e) => {
+                if (!toggle.contains(e.target) && !menu.contains(e.target)) {
+                    toggle.classList.remove("active");
+                    menu.classList.remove("show");
+                }
+            });
+        });
+    </script>
 </head>
 
 <body>
@@ -16,161 +71,157 @@
     <nav class="navbar">
         <div class="navbar-left">
             <img src="{{ asset('images/logo.png') }}" class="logo">
-            <span class="site-title">CodeVision (Juez)</span>
+            <span class="site-title">CodeVision</span>
         </div>
+
         <div class="user-menu-container">
-            <div id="user-toggle" class="user-name">{{ Auth::user()->name }}</div>
+            <div id="user-toggle" class="user-name">
+                {{ Auth::user()->name }}
+                <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9" />
+                </svg>
+            </div>
+
+            <div id="user-menu" class="dropdown">
+                <a href="{{ route('dashboard.estudiante') }}">Inicio</a>
+                <a href="{{ route('editarperfil') }}">Perfil</a>
+                <form action="{{ route('logout') }}" method="POST" style="display: inline;">
+                    @csrf
+                    <a href="#" onclick="this.closest('form').submit();">Cerrar sesión</a>
+                </form>
+            </div>
         </div>
     </nav>
 
-    <div class="container">
-        {{-- Mensajes de Éxito o Error --}}
-        @if(session('success'))
-            <div style="background-color:#d4edda; color:#155724; padding:10px; border-radius:5px; margin-bottom: 15px; text-align: center;">
-                {{ session('success') }}
-            </div>
-        @endif
-        @if($errors->any())
-            <div style="background-color:#f8d7da; color:#721c24; padding:10px; border-radius:5px; margin-bottom: 15px; text-align: center;">
-                {{ $errors->first() }}
-            </div>
-        @endif
-        
-        <h2>Evaluación del equipo</h2>
-        <h2>{{ $equipo->event->title }}</h2>
+    <main class="container">
 
-        <div class="card">
-            <p><strong>Equipo:</strong> {{ $equipo->name }}</p>
-            <p><strong>Número de integrantes:</strong> {{ $equipo->users->count() }} / {{ $equipo->max_members }}</p>
+        @if (!$equipo)
+            <h1 style="color: red;">No perteneces a ningún equipo</h1>
+            <p>Primero debes unirte o crear un equipo para subir un proyecto.</p>
+            <a href="{{ route('dashboard.estudiante') }}" class="btn salir">Volver al Inicio</a>
+        @else
+        <h1 id="evento">Entrega del proyecto: {{ $equipo->event->title ?? 'Evento Desconocido' }}</h1>
+        <p class="team-name">Equipo: <span id="equipo" style="font-weight: bold;">{{ $equipo->name }}</span></p>
 
-            <h4>Integrantes</h4>
-            <ul class="members">
-                @foreach($equipo->users as $miembro)
-                    <li>
-                        {{ $miembro->name }} {{ $miembro->lastname }}
-                        @if($miembro->pivot->role === 'leader') 
-                            <span style="color: goldenrod; font-weight: bold;">(Líder)</span> 
-                        @endif
-                    </li>
-                @endforeach
-            </ul>
-        </div>
-
-        <div class="card">
-            <p><strong>Archivo entregado:</strong></p>
-
-            @if($equipo->project_file_path)
-                {{-- RUTA CORREGIDA: equipos.descargar -> events.download --}}
-                <a id="downloadBtn" 
-                   href="{{ route('events.download', $equipo->id) }}" 
-                   class="btn download" 
-                   target="_blank"> Descargar archivo del equipo
-                </a>
-                <p id="downloadMsg" style="color: green; display: none; margin-top: 5px;">✅ Archivo descargado</p>
-            @else
-                <button class="btn download" style="background-color: #ccc; cursor: not-allowed;" disabled>
-                    ⚠️ No han subido archivo
-                </button>
+            @if (session('success'))
+                <div class="alert alert-success">{{ session('success') }}</div>
             @endif
-        </div>
-
-        <div class="card">
-            {{-- RUTA CORREGIDA: juez.calificar -> judge.score --}}
-            <form action="{{ route('judge.score', $equipo->id) }}" method="POST" id="gradingForm">
-                @csrf
-                
-                <label>Calificación (0 - 100)</label>
-                <input type="number" name="score" id="score" 
-                        min="0" max="100" placeholder="Ej. 85" required
-                        value="{{ $miEvaluacion ? $miEvaluacion->score : '' }}"
-                        disabled>
-
-                <label style="margin-top: 15px; display: block;">Retroalimentación (Opcional)</label>
-                <textarea name="feedback" id="feedback" rows="3" 
-                          style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;"
-                          placeholder="Comentarios para el equipo..."
-                          disabled>{{ $miEvaluacion ? $miEvaluacion->feedback : '' }}</textarea>
-
-                <div class="buttons">
-                    {{-- El disabled se manejará completamente en JS --}}
-                    <button type="button" id="editBtn" class="btn edit">Habilitar Calificación</button>
-                    
-                    <button type="submit" id="saveBtn" class="btn save" disabled>Guardar Evaluación</button>
-                    
-                    <button type="button" class="btn cancel" onclick="window.location='{{ route('judge.teams', $equipo->event_id) }}'">Regresar</button>
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
                 </div>
-            </form>
-        </div>
+            @endif
 
-    </div>
+            <div class="box">
+
+                @if ($equipo->project_file_path)
+                    <div id="entregado">
+                        <h3>✅ Proyecto enviado correctamente</h3>
+                        <p>Archivo actual: <a href="{{ route('equipos.descargar', $equipo->id) }}" target="_blank"
+                                style="color: blue; text-decoration: underline;">Descargar evidencia subida</a></p>
+
+                        <div class="actions" style="margin-top: 20px;">
+                            <button class="btn editar" onclick="mostrarFormulario()">Reemplazar Archivo</button>
+                            <button class="btn salir"
+                                onclick="window.location='{{ route('dashboard.estudiante') }}'">Volver</button>
+                        </div>
+
+                        @if ($equipo->evaluations->count() > 0)
+                            <div class="judge-feedback">
+                                <h3>🎓 Evaluación del Juez</h3>
+                                @foreach ($equipo->evaluations as $eval)
+                                    <p><strong>Nota:</strong> {{ $eval->score }}/100</p>
+                                    <p><strong>Comentarios:</strong>
+                                        {{ $eval->feedback ?? 'Sin comentarios adicionales.' }}</p>
+                                    <hr style="border: 0; border-top: 1px solid #ffeeba;">
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
+                @endif
+
+                <!-- Verificación de si el evento está cerrado -->
+                @if($equipo->event->is_active)
+                    <div id="subida" class="{{ $equipo->project_file_path ? 'hidden' : '' }}">
+
+                        <form action="{{ route('equipos.subir_archivo', $equipo->id) }}" method="POST"
+                            enctype="multipart/form-data"> @csrf
+
+                            <label class="file-label" style="display: block; margin-bottom: 20px;">
+                                Seleccionar archivo (PDF, ZIP, RAR, DOCX - Max 10MB)
+                                <input type="file" name="archivo_proyecto" id="archivo"
+                                    accept=".pdf,.zip,.rar,.doc,.docx" required onchange="mostrarNombreArchivo()">
+                            </label>
+
+                            <p id="preview" class="preview-text" style="margin-bottom: 20px;">Ningún archivo seleccionado
+                            </p>
+
+                            <button type="submit" class="btn enviar">Subir y Enviar</button>
+
+                            @if ($equipo->project_file_path)
+                                <button type="button" class="btn cancel" onclick="cancelarEdicion()"
+                                    style="background-color: #666; margin-left: 10px;">Cancelar</button>
+                            @endif
+                        </form>
+
+                    </div>
+                @else
+                    <div class="alert alert-danger" style="margin-top: 20px;">
+                        ⚠️ **EVENTO CERRADO:** La entrega de archivos para este evento ha finalizado.
+                    </div>
+                @endif
+
+            </div>
+        @endif
+
+    </main>
 
     <footer class="footer">
+        <div class="footer-grid">
+            <div>
+                <h3>CodeVision</h3>
+                <p>Plataforma oficial del Instituto Tecnológico de Oaxaca.</p>
+            </div>
+        </div>
         <p class="footer-copy">© {{ date('Y') }} CodeVision</p>
     </footer>
 
     <script>
-        const downloadBtn = document.getElementById("downloadBtn");
-        const editBtn = document.getElementById("editBtn");
-        const saveBtn = document.getElementById("saveBtn");
-        const scoreInput = document.getElementById("score");
-        const feedbackInput = document.getElementById("feedback");
-        const downloadMsg = document.getElementById("downloadMsg");
-
-        // Variables PHP pasadas a JS
-        const alreadyScored = @json($miEvaluacion ? true : false);
-        const hasFile = @json($equipo->project_file_path ? true : false);
-        
-        // Función para Habilitar campos de calificación
-        const enableGrading = () => {
-            scoreInput.disabled = false;
-            feedbackInput.disabled = false;
-            saveBtn.disabled = false;
-            scoreInput.focus();
-            editBtn.style.display = 'none'; // Ocultamos el botón Habilitar
-        };
-
-        // --- Lógica de Inicialización ---
-        
-        // 1. Si ya se calificó, permitimos editar directamente y habilitamos el botón de edición
-        if (alreadyScored) {
-            editBtn.innerText = "Editar Calificación";
-            editBtn.disabled = false; 
-            
-        } else if (hasFile) {
-            // 2. Si no ha calificado, pero hay archivo, habilitamos el botón para empezar a calificar/descargar
-            editBtn.innerText = "Empezar a Calificar";
-            editBtn.disabled = false; 
-        } else {
-             // 3. Si no hay archivo ni nota, bloqueamos el botón Habilitar
-             editBtn.innerText = "Esperando Entrega";
-             editBtn.disabled = true;
-             editBtn.style.backgroundColor = '#ccc';
+        function mostrarNombreArchivo() {
+            const input = document.getElementById('archivo');
+            const preview = document.getElementById('preview');
+            if (input.files.length > 0) {
+                preview.innerText = "Archivo seleccionado: " + input.files[0].name;
+                preview.style.color = "green";
+                preview.style.fontWeight = "bold";
+            } else {
+                preview.innerText = "Ningún archivo seleccionado";
+                preview.style.color = "#666";
+            }
         }
 
+        function mostrarFormulario() {
+            document.getElementById('entregado').classList.add('hidden');
+            document.getElementById('subida').classList.remove('hidden');
+        }
 
-        // --- Eventos ---
-        
-        // Botón "Habilitar/Editar"
-        editBtn.addEventListener("click", enableGrading);
-
-        // Lógica de Descarga (Si hay archivo)
-        if (downloadBtn) {
-            downloadBtn.addEventListener("click", () => {
-                // Simulamos un pequeño delay para activar el botón
-                setTimeout(() => {
-                    // Si no había nota, forzamos la activación del formulario después de la descarga
-                    if (!alreadyScored) {
-                         enableGrading();
-                    }
-                    
-                    // Retroalimentación visual de descarga
-                    downloadMsg.style.display = "block";
-                    downloadBtn.classList.add("done");
-                    downloadBtn.innerHTML = "✅ Archivo descargado";
-                }, 1000);
-            });
+        function cancelarEdicion() {
+            document.getElementById('subida').classList.add('hidden');
+            document.getElementById('entregado').classList.remove('hidden');
         }
     </script>
 
+    <style>
+        .hidden {
+            display: none;
+        }
+    </style>
+
 </body>
+
 </html>
