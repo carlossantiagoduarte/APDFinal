@@ -53,14 +53,14 @@
                     Inicio
                 </a>
                 
-                <a href="{{ route('editarperfil') }}">
+                {{-- RUTA CORREGIDA: editarperfil -> profile.edit --}}
+                <a href="{{ route('profile.edit') }}">
                     <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4" /><path d="M5.5 21a6.5 6.5 0 0 1 13 0" /></svg>
                     Perfil
                 </a>
 
-                
-
-                <a href="{{ route('solicitudesequipo') }}">
+                {{-- RUTA CORREGIDA: solicitudesequipo -> teams.requests --}}
+                <a href="{{ route('teams.requests') }}">
                     <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M8 12l3 3 5-6" /></svg>
                     Solicitudes
                 </a>
@@ -82,7 +82,6 @@
 
     <section class="search-section">
         <form action="{{ route('dashboard.estudiante') }}" method="GET" style="width: 100%;">
-            
             <div class="search-box">
                 <input type="text" name="search" placeholder="Buscar Eventos, Categorías o Tecnologías..." value="{{ request('search') }}" />
                 <button type="submit" class="btn-search">Buscar</button>
@@ -95,28 +94,30 @@
                     </a>
                 </div>
             @endif
-
         </form>
     </section>
 
     <section class="events">
         <div class="events-header">
-            <h2>Eventos Disponibles</h2>
+            <h2>Eventos y Resultados Recientes</h2>
         </div>
 
         <div class="events-grid">
             @if(isset($events) && $events->count() > 0)
                 @foreach($events as $event)
                     <div class="event-card">
-                        
-                        <button onclick="window.location='{{ route('estudiante.evento.ver', $event->id) }}'" 
+                        {{-- RUTA CORREGIDA: estudiante.evento.ver -> student.event.show --}}
+                        <button onclick="window.location='{{ route('student.event.show', $event->id) }}'" 
                                 class="card-link" style="all: unset; width: 100%; cursor: pointer;">
-                            
                             <img src="{{ $event->image_url ?? asset('images/default-event.jpg') }}" 
                                  class="event-img" alt="{{ $event->title }}"
                                  onerror="this.src='{{ asset('images/logo.png') }}'">
-                             
                             <div class="event-info">
+                                @if(!$event->is_active)
+                                    <p style="color: #d9534f; font-weight: bold; margin-bottom: 5px;">
+                                        🛑 Evento Finalizado
+                                    </p>
+                                @endif
                                 <p class="event-date">📅 {{ \Carbon\Carbon::parse($event->start_date)->format('d M, Y') }}</p>
                                 <h3 class="event-title">{{ $event->title }}</h3>
                                 <p class="event-description">{{ \Illuminate\Support\Str::limit($event->description, 80) }}</p>
