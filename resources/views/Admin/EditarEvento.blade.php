@@ -80,7 +80,8 @@
 
             <div id="user-menu" class="dropdown">
                 <a href="{{ route('dashboard.admin') }}">Inicio</a>
-                <a href="{{ route('editarperfil') }}">Perfil</a>
+                {{-- RUTA CORREGIDA --}}
+                <a href="{{ route('profile.edit') }}">Perfil</a>
                 <form action="{{ route('logout') }}" method="POST" style="display: block;">
                     @csrf
                     <a href="#" onclick="this.closest('form').submit();">Cerrar sesión</a>
@@ -115,7 +116,8 @@
                 </div>
             @endif
 
-            <form id="eventForm" action="{{ route('events.update', $event->id) }}" method="POST">
+            {{-- CORRECCIÓN: La URL usa el modelo como parámetro de ruta --}}
+            <form id="eventForm" action="{{ route('events.update', $event) }}" method="POST">
                 @csrf
                 @method('PUT') 
 
@@ -166,7 +168,7 @@
                 </div>
 
                 <div class="step" id="step2">
-
+                    {{-- Nota: El JS maneja el disabled de estos campos al cambiar de paso --}}
                     <div class="form-row">
                         <div class="form-group">
                             <label>Fecha Inicio</label>
@@ -199,11 +201,11 @@
                             </select>
 
                             <input type="text" id="otherCategoryInput" name="other_category" 
-                                   value="{{ $isOther ? $currentCategory : '' }}"
-                                   placeholder="Escribe la categoría..." 
-                                   style="margin-top: 10px;" 
-                                   class="{{ $isOther ? '' : 'hidden' }}"
-                                   disabled>
+                                    value="{{ $isOther ? $currentCategory : '' }}"
+                                    placeholder="Escribe la categoría..." 
+                                    style="margin-top: 10px;" 
+                                    class="{{ $isOther ? '' : 'hidden' }}"
+                                    disabled>
                         </div>
 
                         <div class="form-group">
@@ -214,6 +216,18 @@
                                 <option value="Híbrido" {{ $event->modality == 'Híbrido' ? 'selected' : '' }}>Híbrido</option>
                             </select>
                         </div>
+                    </div>
+                    
+                    {{-- Campo Banner URL --}}
+                    <div class="form-group">
+                        <label>Banner Horizontal (URL)</label>
+                        <input type="url" name="banner_url" value="{{ old('banner_url', $event->banner_url) }}" disabled>
+                    </div>
+                    
+                    {{-- Campo Link de Registro Externo --}}
+                    <div class="form-group">
+                        <label>Link de Registro Externo (Opcional)</label>
+                        <input type="url" name="registration_link" value="{{ old('registration_link', $event->registration_link) }}" disabled>
                     </div>
 
                     <label>Documentos / Info Extra</label>
@@ -241,7 +255,7 @@
         </div>
     </div>
 
-    <form id="deleteForm" action="{{ route('events.destroy', $event->id) }}" method="POST" style="display: none;">
+    <form id="deleteForm" action="{{ route('events.destroy', $event) }}" method="POST" style="display: none;">
         @csrf
         @method('DELETE')
     </form>
@@ -259,35 +273,64 @@
         const step1 = document.getElementById("step1");
         const step2 = document.getElementById("step2");
 
-        // Lógica para Select de Categoría
         const categorySelect = document.getElementById('categorySelect');
         const otherCategoryInput = document.getElementById('otherCategoryInput');
 
+        // Función para habilitar/deshabilitar campos de un paso
+        const toggleStepFields = (stepElement, enable) => {
+            const fields = stepElement.querySelectorAll('input, select, textarea');
+            fields.forEach(field => {
+                field.disabled = !enable;
+            });
+        };
+
+        // Al cargar: Deshabilitar Paso 2 inicialmente para validación
+        toggleStepFields(step2, false);
+
+        // Lógica para Select de Categoría
+        if (categorySelect.value !== 'Otro') {
+            otherCategoryInput.classList.add('hidden');
+        } else {
+             // Si el valor actual es 'Otro', lo habilitamos inicialmente para el modo lectura/escritura
+             otherCategoryInput.disabled = true; // Inicia deshabilitado en modo lectura
+        }
+
+
         categorySelect.addEventListener('change', function() {
+            const isEditing = !editarBtn.disabled;
+            
             if (this.value === 'Otro') {
-                otherCategoryInput.style.display = 'block';
+                otherCategoryInput.classList.remove('hidden');
                 otherCategoryInput.required = true;
-                otherCategoryInput.disabled = false; // Asegurar que esté habilitado si estamos editando
+                if (isEditing) {
+                    otherCategoryInput.disabled = false; // Habilitar
+                    otherCategoryInput.classList.add("editable");
+                }
                 otherCategoryInput.focus();
             } else {
-                otherCategoryInput.style.display = 'none';
+                otherCategoryInput.classList.add('hidden');
                 otherCategoryInput.required = false;
+                otherCategoryInput.disabled = true; 
+                otherCategoryInput.classList.remove("editable");
                 otherCategoryInput.value = '';
             }
         });
 
         // Habilitar Edición
         editarBtn.addEventListener("click", () => {
+            // Re-habilita todos los inputs y selecciona el paso 1 por defecto
+            toggleStepFields(step1, true);
+            toggleStepFields(step2, false); 
+            
             inputs.forEach(el => {
-                // Solo habilitamos el input "Otro" si la opción "Otro" está seleccionada
-                if (el.id === 'otherCategoryInput') {
-                    if (categorySelect.value === 'Otro') {
-                        el.disabled = false;
-                        el.classList.add("editable");
-                    }
-                } else {
-                    el.disabled = false;
-                    el.classList.add("editable");
+                el.disabled = false;
+                el.classList.add("editable");
+
+                // Manejo especial para el input de "Otra Categoría"
+                if (el.id === 'otherCategoryInput' && categorySelect.value !== 'Otro') {
+                    // Si no está seleccionada la opción 'Otro', deshabilitamos el input de texto extra
+                    el.disabled = true;
+                    el.classList.remove("editable");
                 }
             });
 
@@ -300,16 +343,39 @@
             editarBtn.style.backgroundColor = "#ccc";
         });
 
+        // Navegación entre pasos
         nextBtn.addEventListener("click", () => {
+            const form = document.getElementById('eventForm');
+            
+            // 1. Validar solo el Paso 1
+            if (!form.checkValidity()) {
+                 form.reportValidity();
+                 return; 
+            }
+
+            // 2. Mover la validación y el CSS
+            toggleStepFields(step1, false); // Deshabilita Paso 1
+            toggleStepFields(step2, true);  // Habilita Paso 2
+
             step1.classList.remove("active");
             step2.classList.add("active");
         });
 
         prevBtn.addEventListener("click", () => {
+            // 1. Mover la validación y el CSS
+            toggleStepFields(step2, false); // Deshabilita Paso 2
+            toggleStepFields(step1, true);  // Habilita Paso 1
+
+            // Reajustar el input "Otro" al volver, si no es 'Otro' debe estar deshabilitado
+            if (categorySelect.value !== 'Otro') {
+                 otherCategoryInput.disabled = true;
+            }
+
             step2.classList.remove("active");
             step1.classList.add("active");
         });
 
+        // Eliminar Evento
         eliminarBtn.addEventListener("click", () => {
             if (confirm("¿Estás SEGURO de eliminar este evento? Esta acción no se puede deshacer.")) {
                 deleteForm.submit();
@@ -328,4 +394,5 @@
     </footer>
 
 </body>
+
 </html>
