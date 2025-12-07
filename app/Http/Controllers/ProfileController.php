@@ -14,7 +14,7 @@ class ProfileController extends Controller
     {
         // Asegúrate de que tu archivo blade se llame 'editarperfil.blade.php' 
         // y esté en la carpeta resources/views/
-        return view('editarperfil'); 
+        return view('EditarPerfil');
     }
 
     // Guardar los cambios
@@ -49,6 +49,6 @@ class ProfileController extends Controller
         $user->save();
 
         // 5. Redirigir con mensaje de éxito
-        return redirect()->route('editarperfil')->with('success', 'Perfil actualizado correctamente.');
+        return redirect()->route('profile.edit')->with('success', 'Perfil actualizado correctamente.');
     }
 }
