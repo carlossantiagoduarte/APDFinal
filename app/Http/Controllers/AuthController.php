@@ -6,9 +6,22 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use Illuminate\Http\RedirectResponse; // Añadido para la función logout
 
 class AuthController extends Controller
 {
+    /**
+     * Muestra el formulario de inicio de sesión. (Ruta: GET /iniciar-sesion, Nombre: login)
+     */
+    public function showLoginForm()
+    {
+        // CORRECCIÓN CRÍTICA: Cambiado 'auth.login' al nombre real del archivo Blade
+        return view('IniciarSesion'); 
+    }
+
+    /**
+     * Procesa las credenciales e inicia la sesión. (Ruta: POST /iniciar-sesion, Nombre: login.submit)
+     */
     public function iniciarSesion(Request $request)
     {
         // Validación
@@ -45,5 +58,17 @@ class AuthController extends Controller
 
         // Credenciales incorrectas
         return back()->withErrors(['error' => 'Correo o contraseña incorrectos']);
+    }
+    
+    /**
+     * Cierra la sesión del usuario. (Ruta: POST /logout, Nombre: logout)
+     * (Asumiendo que se añadió el método logout previamente, si no, usa el closure en web.php)
+     */
+    public function logout(Request $request): RedirectResponse
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect('/'); 
     }
 }
