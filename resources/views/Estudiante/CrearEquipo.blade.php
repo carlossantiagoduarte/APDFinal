@@ -28,7 +28,7 @@
         </div>
         <div class="user-menu-container">
             <div id="user-toggle" class="user-name">
-                {{ Auth::user()->name }}
+                {{ Auth::user()->name }} {{ Auth::user()->lastname ?? '' }}
             </div>
             {{-- Nota: El menú desplegable no está aquí, asumimos que está en una plantilla base --}}
         </div>
