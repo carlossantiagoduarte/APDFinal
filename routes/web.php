@@ -3,7 +3,10 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\EventController;
 use App\Http\Controllers\Admin\AdminController; 
+use App\Http\Controllers\Juez\DashboardJuezController;
+use App\Models\Event;
 use App\Http\Controllers\ProfileController; // Importamos el controlador de perfil
 
 /*
@@ -82,12 +85,17 @@ Route::middleware(['auth'])->group(function () {
         return view('Admin.EditarEvento');
     })->name('editarevento');
 
-    // Panel Admin Extra
-    Route::get('/admin', function () {
-        return view('Admin.Admin');
-    })->name('admin');
+Route::get('/admin', function () {
+    $ultimoEvento = Event::latest()->first();
+    if ($ultimoEvento) {
+        return redirect()->route('evento.resultados', ['id' => $ultimoEvento->id]);
+    }
+    return redirect()->route('dashboard.admin');
 
+})->name('admin');
 
+    // Ver detalles y resultados de un evento específico
+Route::get('/evento/{id}/resultados', [AdminController::class, 'showEventResults'])->name('evento.resultados');
     /*
     |--------------------------------------------------------------------------
     | 3. SECCIÓN ESTUDIANTE (CÓDIGO DE TU EQUIPO)
@@ -106,6 +114,15 @@ Route::middleware(['auth'])->group(function () {
         return view('Estudiante.CrearEquipo');
     })->name('crearequipo');
 
+    Route::get('/solicitudes-equipo', function () {
+    return view('Estudiante.SolicitudesEquipo');
+})->name('solicitudesequipo');
+
+Route::get('/dashboard/estudiante', [EventController::class, 'dashboardEstudiante'])->name('dashboard.estudiante');
+
+
+
+
     Route::get('entrega-proyecto', function () {
         return view('Estudiante.EntregaProyecto');
     })->name('entrega-proyecto');
@@ -115,6 +132,7 @@ Route::middleware(['auth'])->group(function () {
     })->name('estudiante');
 
 
+
     /*
     |--------------------------------------------------------------------------
     | 4. SECCIÓN JUEZ (CÓDIGO DE TU EQUIPO)
@@ -122,8 +140,12 @@ Route::middleware(['auth'])->group(function () {
     */
 
     Route::get('/dashboard/juez', function () {
-        return view('Juez.DashboardJuez');
-    })->name('dashboard.juez');
+    // Obtener los eventos (ajusta esto según tu modelo)
+    $events = Event::all();  // O la consulta que necesites
+
+    // Pasar la variable $events a la vista
+    return view('Juez.DashboardJuez', compact('events'));
+})->name('dashboard.juez');
 
     Route::get('/calificar-equipo', function () {
         return view('Juez.CalificarEquipo');
