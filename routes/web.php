@@ -3,8 +3,11 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\EventController;
 use App\Http\Controllers\Admin\AdminController; 
-use App\Http\Controllers\ProfileController; // Importamos el controlador de perfil
+// use App\Http\Controllers\Juez\DashboardJuezController; // Descomenta si vas a usar controlador para el juez
+use App\Models\Event;
+use App\Http\Controllers\ProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,20 +19,18 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// LOGIN
+// LOGIN & REGISTRO
 Route::get('/iniciar-sesion', function () {
     return view('IniciarSesion');
 })->name('login');
 
 Route::post('/iniciar-sesion', [AuthController::class, 'iniciarSesion'])->name('iniciarsesion.post');
 
-// LOGOUT
 Route::post('/logout', function () {
     Auth::logout();
     return redirect('/'); 
 })->name('logout');
 
-// REGISTRO
 Route::get('/Registrar-Usuario', function () {
     return view('RegistrarUsuario');
 })->name('registrarusuario');
@@ -39,22 +40,21 @@ Route::get('/Registrar-Usuario', function () {
 |--------------------------------------------------------------------------
 | RUTAS PROTEGIDAS (Requieren estar logueado)
 |--------------------------------------------------------------------------
-| Todo lo que esté dentro de este grupo requiere que el usuario haya iniciado sesión.
 */
 
 Route::middleware(['auth'])->group(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | 1. RUTAS GLOBALES (Para Admin, Juez y Estudiante)
+    | 1. RUTAS GLOBALES Y PERFIL
     |--------------------------------------------------------------------------
     */
     
-    // Perfil (Universal para todos los roles)
+    // Perfil
     Route::get('/editar-perfil', [ProfileController::class, 'edit'])->name('editarperfil');
     Route::put('/perfil/actualizar', [ProfileController::class, 'update'])->name('profile.update');
 
-    // Dashboard Genérico (Redirección o vista base)
+    // Dashboards Genéricos (Vistas base)
     Route::get('/dashboard', function () {
         return view('Dashboard');
     })->name('dashboard');
@@ -66,38 +66,44 @@ Route::middleware(['auth'])->group(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | 2. SECCIÓN ADMINISTRADOR (TU CÓDIGO)
+    | 2. SECCIÓN ADMINISTRADOR
     |--------------------------------------------------------------------------
     */
 
-    // Dashboard con datos de la BD
+    // Dashboard Principal Admin
     Route::get('/dashboard/admin', [AdminController::class, 'index'])->name('dashboard.admin');
 
-    // Crear Evento
+    // Gestión de Eventos (Crear, Editar, Eliminar)
     Route::get('/crear-evento', [AdminController::class, 'create'])->name('events.create');
     Route::post('/crear-evento', [AdminController::class, 'store'])->name('events.store');
+    
+    Route::get('/evento/{id}/editar', [AdminController::class, 'edit'])->name('events.edit');
+    Route::put('/evento/{id}/actualizar', [AdminController::class, 'update'])->name('events.update');
+    Route::delete('/evento/{id}/eliminar', [AdminController::class, 'destroy'])->name('events.destroy');
 
-    // Editar Evento (Estático por ahora)
-    Route::get('/editar-evento', function () {
-        return view('Admin.EditarEvento');
-    })->name('editarevento');
+    // Resultados de Evento
+    Route::get('/evento/{id}/resultados', [AdminController::class, 'showEventResults'])->name('evento.resultados');
 
-    // Panel Admin Extra
+    // Redirección inteligente: Lleva al último evento o al dashboard
     Route::get('/admin', function () {
-        return view('Admin.Admin');
+        $ultimoEvento = Event::latest()->first();
+        if ($ultimoEvento) {
+            return redirect()->route('evento.resultados', ['id' => $ultimoEvento->id]);
+        }
+        return redirect()->route('dashboard.admin');
     })->name('admin');
 
 
     /*
     |--------------------------------------------------------------------------
-    | 3. SECCIÓN ESTUDIANTE (CÓDIGO DE TU EQUIPO)
+    | 3. SECCIÓN ESTUDIANTE
     |--------------------------------------------------------------------------
     */
     
-    Route::get('/dashboard/estudiante', function () {
-        return view('Estudiante.DashboardEstudiante');
-    })->name('dashboard.estudiante');
+    // Dashboard Estudiante (Usando Controlador)
+    Route::get('/dashboard/estudiante', [EventController::class, 'dashboardEstudiante'])->name('dashboard.estudiante');
 
+    // Gestión de Equipos Estudiante
     Route::get('unirse-a-equipo', function () {
         return view('Estudiante.UnirseAEquipo');
     })->name('unirseaequipo');
@@ -105,6 +111,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/crear-equipo', function () {
         return view('Estudiante.CrearEquipo');
     })->name('crearequipo');
+
+    Route::get('/solicitudes-equipo', function () {
+        return view('Estudiante.SolicitudesEquipo');
+    })->name('solicitudesequipo');
 
     Route::get('entrega-proyecto', function () {
         return view('Estudiante.EntregaProyecto');
@@ -117,12 +127,13 @@ Route::middleware(['auth'])->group(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | 4. SECCIÓN JUEZ (CÓDIGO DE TU EQUIPO)
+    | 4. SECCIÓN JUEZ
     |--------------------------------------------------------------------------
     */
 
     Route::get('/dashboard/juez', function () {
-        return view('Juez.DashboardJuez');
+        $events = Event::all(); 
+        return view('Juez.DashboardJuez', compact('events'));
     })->name('dashboard.juez');
 
     Route::get('/calificar-equipo', function () {
