@@ -127,4 +127,32 @@ class AdminController extends Controller
 
         return view('Admin.ResultadosEvento', compact('evento', 'equipos'));
     }
+    // 1. Mostrar el formulario con los datos cargados
+public function edit($id)
+{
+    $event = Event::findOrFail($id);
+    return view('Admin.EditarEvento', compact('event'));
+}
+
+// 2. Guardar los cambios en la Base de Datos
+public function update(Request $request, $id)
+{
+    $event = Event::findOrFail($id);
+    
+    // Validamos (puedes copiar las reglas del store aquí si quieres ser estricto)
+    $data = $request->except(['_token', '_method']);
+    
+    $event->update($data); // Actualiza todo lo que coincida
+
+    return redirect()->route('dashboard.admin')->with('success', 'Evento actualizado correctamente.');
+}
+
+// 3. Eliminar el evento
+public function destroy($id)
+{
+    $event = Event::findOrFail($id);
+    $event->delete();
+
+    return redirect()->route('dashboard.admin')->with('success', 'Evento eliminado.');
+}
 }
