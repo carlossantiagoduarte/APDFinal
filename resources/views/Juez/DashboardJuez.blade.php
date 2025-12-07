@@ -112,12 +112,6 @@
 
         </form>
 
-        <div class="filters" style="margin-top: 0; justify-content: flex-end;">
-             <div class="new-event">
-                <a href="{{ route('events.create') }}" class="btn-search" style="text-decoration: none; display: inline-block; text-align: center;">
-                    Crear evento
-                </a>
-            </div>
         </div>
     </section>
 
