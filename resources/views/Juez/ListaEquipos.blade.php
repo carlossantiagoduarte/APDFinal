@@ -4,73 +4,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Evaluar: {{ $evento->title }} | CodeVision</title>
+    {{-- CORRECCIÓN 1: $evento -> $event --}}
+    <title>Lista de Equipos: {{ $event->title }} | CodeVision</title>
 
     <link rel="stylesheet" href="{{ asset('styles/equipos.css') }}">
     <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
-
     <link href="https://fonts.googleapis.com/css2?family=Jomolhari&family=Inter:wght@400;600&display=swap"
         rel="stylesheet">
 
     <style>
-        /* Estilos específicos para esta vista */
-        .score-input {
-            width: 70px;
-            padding: 8px;
-            text-align: center;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+        /* ... (Estilos CSS) ... */
+        .badge {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.85em;
             font-weight: bold;
         }
 
-        .score-input:disabled {
-            background-color: #e9ecef;
-            cursor: not-allowed;
+        .badge-pending {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
         }
 
-        .feedback-input {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            margin-top: 5px;
+        .badge-graded {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
         }
 
-        .btn-save {
-            background-color: #28a745;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .btn-save:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
-
-        .btn-save:hover:not(:disabled) {
-            background-color: #218838;
-        }
-
-        .btn-download {
+        /* Botón de acción principal */
+        .btn-action {
             display: inline-block;
-            background-color: #007bff;
+            background-color: #333;
             color: white;
-            padding: 6px 12px;
-            border-radius: 4px;
+            padding: 8px 15px;
+            border-radius: 5px;
             text-decoration: none;
             font-size: 0.9em;
-            margin-bottom: 5px;
-            cursor: pointer;
+            transition: 0.2s;
         }
 
-        .btn-download.downloaded {
-            background-color: #6c757d;
-            /* Gris cuando ya se descargó */
-            cursor: default;
+        .btn-action:hover {
+            background-color: #555;
         }
 
         .back-link {
@@ -105,21 +81,16 @@
         Volver a Eventos
     </a>
 
-    <h1 style="margin-left: 20px;">Evaluando: {{ $evento->title }}</h1>
-
-    @if (session('success'))
-        <div style="background-color: #d4edda; color: #155724; padding: 15px; margin: 20px; border-radius: 5px;">
-            {{ session('success') }}
-        </div>
-    @endif
+    {{-- CORRECCIÓN 2: $evento -> $event --}}
+    <h1 style="margin-left: 20px;">Equipos en: {{ $event->title }}</h1>
 
     <table id="tablaEquipos">
         <thead>
             <tr>
-                <th style="width: 25%;">Equipo y Proyecto</th>
-                <th style="width: 20%;">Archivo</th>
-                <th style="width: 15%;">Calificación (0-100)</th>
-                <th style="width: 30%;">Retroalimentación</th>
+                <th style="width: 30%;">Equipo</th>
+                <th style="width: 25%;">Proyecto</th>
+                <th style="width: 20%;">Estado Entrega</th>
+                <th style="width: 15%;">Tu Evaluación</th>
                 <th style="width: 10%;">Acción</th>
             </tr>
         </thead>
@@ -129,97 +100,103 @@
                     <td>
                         <strong style="font-size: 1.1em;">{{ $equipo->name }}</strong><br>
                         <span style="font-size: 0.9em; color: #666;">Líder: {{ $equipo->leader_name }}</span>
-                        @if ($equipo->project_name)
-                            <br>
-                            <div style="margin-top:5px; font-style:italic;">"{{ $equipo->project_name }}"</div>
-                        @endif
+                    </td>
+
+                    <td>
+                        {{ $equipo->project_name ?? 'Sin nombre asignado' }}
+
                     </td>
 
                     <td>
                         @if ($equipo->project_file_path)
-                            <a href="{{ route('equipos.descargar', $equipo->id) }}" class="btn-download"
-                                onclick="enableGrading({{ $equipo->id }});">
-                                📄 Descargar Proyecto Real
-                            </a>
+                            <span style="color: green;">✅ Archivo Entregado</span>
                         @else
-                            <span style="color: red; font-size: 0.8em;">⚠️ No ha entregado archivo</span>
+                            <span style="color: #d9534f;">⚠️ Sin entregar</span>
                         @endif
-                        <br>
-                        <small style="color: #888;" id="status-{{ $equipo->id }}">Descarga para calificar</small>
                     </td>
 
-                    <form action="{{ route('juez.calificar', $equipo->id) }}" method="POST">
-                        @csrf
-
+                    <td>
                         @php
-                            $nota = $equipo->evaluations->first();
-                            $yaCalificado = $nota ? true : false;
+                            // Asumimos que $equipo->evaluations ya está cargado y filtrado por Auth::user()->id en el controlador
+                            $miNota = $equipo->evaluations->first();
                         @endphp
 
-                        <td>
-                            <input type="number" name="score" id="score-{{ $equipo->id }}" class="score-input"
-                                min="0" max="100" required value="{{ $nota ? $nota->score : '' }}"
-                                placeholder="-" {{ $yaCalificado ? '' : 'disabled' }}>
-                        </td>
+                        @if ($miNota)
+                            <span class="badge badge-graded">Calificado: {{ $miNota->score }}/100</span>
+                        @else
+                            <span class="badge badge-pending">Pendiente</span>
+                        @endif
+                    </td>
 
-                        <td>
-                            <textarea name="feedback" id="feedback-{{ $equipo->id }}" class="feedback-input" rows="2"
-                                placeholder="Comentario para el equipo..." {{ $yaCalificado ? '' : 'disabled' }}>{{ $nota ? $nota->feedback : '' }}</textarea>
-                        </td>
-
-                        <td>
-                            <button type="submit" id="btn-save-{{ $equipo->id }}" class="btn-save"
-                                {{ $yaCalificado ? '' : 'disabled' }}>
-                                {{ $nota ? 'Actualizar' : 'Guardar' }}
-                            </button>
-                        </td>
-                    </form>
+                    <td>
+                        {{-- RUTA OK: judge.team.details --}}
+                        <a href="{{ route('judge.team.details', $equipo->id) }}" class="btn-action">
+                            @if ($miNota)
+                                ✏️ Editar
+                            @else
+                                👁️ Evaluar
+                            @endif
+                        </a>
+                    </td>
                 </tr>
             @empty
                 <tr>
                     <td colspan="5" style="text-align: center; padding: 30px; color: #666;">
-                        No hay equipos registrados en este evento para calificar.
+                        No hay equipos registrados en este evento.
                     </td>
                 </tr>
             @endforelse
         </tbody>
     </table>
+    
+    @if (isset($ganadores) && $ganadores->isNotEmpty())
+        <section class="podium-section"
+            style="margin-bottom: 40px; text-align: center; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+            <h2 style="font-family: 'Jomolhari', serif; color: #1a1a1a; margin-bottom: 20px;">
+                🥇 PODIO OFICIAL 🥈
+            </h2>
 
+            <div style="display: flex; justify-content: center; gap: 30px; align-items: flex-end;">
+
+                @if (isset($ganadores[1]))
+                    <div
+                        style="width: 150px; height: 180px; background-color: #c0c0c0; border-radius: 8px 8px 0 0; padding-top: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">
+                        <div style="font-size: 2.5rem;">🥈</div>
+                        <p style="font-weight: bold; margin: 5px 0;">{{ $ganadores[1]->name }}</p>
+                        <small style="color: #444;">2do Lugar</small>
+                    </div>
+                @endif
+
+                @if (isset($ganadores[0]))
+                    <div
+                        style="width: 170px; height: 220px; background-color: #ffd700; border-radius: 8px 8px 0 0; padding-top: 10px; position: relative; top: -20px; box-shadow: 0 8px 20px rgba(0,0,0,0.3);">
+                        <div style="font-size: 3rem;">🥇</div>
+                        <p style="font-weight: bold; margin: 10px 0;">{{ $ganadores[0]->name }}</p>
+                        <small style="color: #444;">1er Lugar</small>
+                    </div>
+                @endif
+
+                @if (isset($ganadores[2]))
+                    <div
+                        style="width: 150px; height: 150px; background-color: #cd7f32; border-radius: 8px 8px 0 0; padding-top: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">
+                        <div style="font-size: 2.5rem;">🥉</div>
+                        <p style="font-weight: bold; margin: 5px 0;">{{ $ganadores[2]->name }}</p>
+                        <small style="color: #444;">3er Lugar</small>
+                    </div>
+                @endif
+            </div>
+        </section>
+    @endif
+    
     <div
         style="text-align: center; margin-top: 40px; margin-bottom: 40px; padding: 20px; background-color: #f9f9f9; border-top: 1px solid #eee;">
-
         <h3 style="color: #555; margin-bottom: 15px;">¿Necesitas revisar las bases del concurso?</h3>
-
-        <a href="{{ route('events.show', $evento->id) }}"
+        {{-- CORRECCIÓN 3: $evento -> $event --}}
+        <a href="{{ route('events.show', $event->id) }}" 
             style="display: inline-block; text-decoration: none; background-color: #333; color: white; padding: 12px 25px; border-radius: 5px; font-weight: bold; transition: 0.3s;">
-            Ver Información Completa del Evento
+            ℹ️ Ver Información Completa del Evento
         </a>
-
     </div>
-
-    <script>
-        function enableGrading(equipoId) {
-            // Esperamos un momento para simular que la descarga inició
-            setTimeout(() => {
-                // 1. Cambiar apariencia del botón de descarga
-                const downloadBtn = document.getElementById('btn-download-' + equipoId);
-                const statusText = document.getElementById('status-' + equipoId);
-
-                downloadBtn.innerHTML = "✅ Descargado";
-                downloadBtn.classList.add('downloaded');
-                statusText.innerText = "Listo para calificar";
-                statusText.style.color = "green";
-
-                // 2. Desbloquear los inputs
-                document.getElementById('score-' + equipoId).disabled = false;
-                document.getElementById('feedback-' + equipoId).disabled = false;
-                document.getElementById('btn-save-' + equipoId).disabled = false;
-
-                // Poner foco en la calificación
-                document.getElementById('score-' + equipoId).focus();
-            }, 500);
-        }
-    </script>
 
 </body>
 
