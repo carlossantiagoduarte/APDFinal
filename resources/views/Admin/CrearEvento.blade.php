@@ -30,9 +30,16 @@
         .back-link:hover {
             background-color: #f0f0f0;
         }
-        /* Estilo para ocultar/mostrar suavemente */
+        /* Estilo para ocultar/mostrar */
         .hidden {
+            display: none !important; 
+        }
+        /* Aseguramos que solo los pasos activos se muestren */
+        .step {
             display: none;
+        }
+        .step.active {
+            display: block;
         }
     </style>
 
@@ -76,8 +83,9 @@
             
             <div id="user-menu" class="dropdown">
                 <a href="{{ route('dashboard.admin') }}">Inicio</a>
-                <a href="{{ route('editarperfil') }}">Perfil</a>
-                <form action="{{ route('logout') }}" method="POST" style="display: inline;">
+                {{-- RUTA CORREGIDA --}}
+                <a href="{{ route('profile.edit') }}">Perfil</a> 
+                <form action="{{ route('logout') }}" method="POST" style="display: block;">
                     @csrf
                     <a href="#" onclick="this.closest('form').submit();">Cerrar sesión</a>
                 </form>
@@ -124,21 +132,28 @@
                         <div class="form-group">
                             <label>Categoría Principal <span style="font-size:0.8em; color:gray;">(Nuevo)</span></label>
                             
+                            @php
+                                $standardCategories = ['Tecnología', 'Programación', 'Ciberseguridad', 'Inteligencia Artificial', 'Diseño UI/UX', 'Robótica'];
+                                $oldCategory = old('main_category');
+                                $isOtherOld = $oldCategory && !in_array($oldCategory, $standardCategories);
+                            @endphp
+
                             <select id="categorySelect" name="main_category" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;" required>
-                                <option value="" disabled selected>Selecciona una categoría</option>
-                                <option value="Tecnología">Tecnología</option>
-                                <option value="Programación">Programación</option>
-                                <option value="Ciberseguridad">Ciberseguridad</option>
-                                <option value="Inteligencia Artificial">Inteligencia Artificial</option>
-                                <option value="Diseño UI/UX">Diseño UI/UX</option>
-                                <option value="Robótica">Robótica</option>
-                                <option value="Otro">Otro (Escribir manualmente)</option>
+                                <option value="" disabled {{ !$oldCategory ? 'selected' : '' }}>Selecciona una categoría</option>
+                                @foreach($standardCategories as $cat)
+                                    <option value="{{ $cat }}" {{ $oldCategory == $cat ? 'selected' : '' }}>{{ $cat }}</option>
+                                @endforeach
+                                <option value="Otro" {{ $isOtherOld || $oldCategory === 'Otro' ? 'selected' : '' }}>Otro (Escribir manualmente)</option>
                             </select>
 
                             <input type="text" id="otherCategoryInput" name="other_category" 
-                                   placeholder="Escribe el nombre de la categoría..." 
-                                   style="margin-top: 10px; display: none;" 
-                                   class="hidden">
+                                    value="{{ $isOtherOld ? $oldCategory : old('other_category') }}"
+                                    placeholder="Escribe el nombre de la categoría..." 
+                                    style="margin-top: 10px;" 
+                                    class="{{ old('other_category') || $isOtherOld ? '' : 'hidden' }}"
+                                    {{-- El atributo 'disabled' inicial será manejado por el JS en initializeForm() --}}
+                                    disabled 
+                                    {{ old('other_category') || $isOtherOld ? 'required' : '' }}>
                         </div>
                     </div>
 
@@ -150,9 +165,9 @@
                         <div class="form-group">
                             <label>Modalidad <span style="font-size:0.8em; color:gray;">(Nuevo)</span></label>
                             <select name="modality" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;" required>
-                                <option value="Presencial">Presencial</option>
-                                <option value="Virtual">Virtual</option>
-                                <option value="Híbrido">Híbrido</option>
+                                <option value="Presencial" {{ old('modality') == 'Presencial' ? 'selected' : '' }}>Presencial</option>
+                                <option value="Virtual" {{ old('modality') == 'Virtual' ? 'selected' : '' }}>Virtual</option>
+                                <option value="Híbrido" {{ old('modality') == 'Híbrido' ? 'selected' : '' }}>Híbrido</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -244,53 +259,112 @@
     <script>
         const nextBtn = document.getElementById('nextBtn');
         const prevBtn = document.getElementById('prevBtn');
+        const form = document.getElementById('eventForm'); 
         const step1 = document.getElementById('step1');
         const step2 = document.getElementById('step2');
         
-        // Elementos para la lógica de "Otro"
         const categorySelect = document.getElementById('categorySelect');
         const otherCategoryInput = document.getElementById('otherCategoryInput');
 
-        // Escuchar cambios en el Select
+        // --- FUNCIONES DE MANEJO DE PASOS ---
+
+        const toggleStepFields = (stepElement, enable) => {
+            const fields = stepElement.querySelectorAll('input, select, textarea');
+            fields.forEach(field => {
+                field.disabled = !enable;
+            });
+        };
+
+        const initializeForm = () => {
+            // 1. Al cargar: Habilitamos el Paso 1 y Deshabilitamos el Paso 2
+            toggleStepFields(step1, true);
+            toggleStepFields(step2, false); 
+
+            // 2. Lógica de Old Input para 'Otro' (Asegura que el campo esté deshabilitado si no se usó)
+            const isOtherSelected = categorySelect.value === 'Otro' || (otherCategoryInput.value !== '' && otherCategoryInput.value !== null);
+
+            if (isOtherSelected) {
+                 otherCategoryInput.classList.remove('hidden');
+                 otherCategoryInput.required = true;
+                 otherCategoryInput.disabled = false; // Habilitar si ya tiene valor previo
+            } else {
+                 otherCategoryInput.classList.add('hidden');
+                 otherCategoryInput.required = false;
+                 otherCategoryInput.disabled = true; // Deshabilitar si está oculto
+            }
+        };
+        
+        // --- LÓGICA DE CATEGORÍA ---
+
         categorySelect.addEventListener('change', function() {
             if (this.value === 'Otro') {
-                otherCategoryInput.style.display = 'block'; // Mostrar
-                otherCategoryInput.required = true;         // Hacer obligatorio
+                otherCategoryInput.classList.remove('hidden'); 
+                otherCategoryInput.required = true;
+                otherCategoryInput.disabled = false; // HABILITAR
                 otherCategoryInput.focus();
             } else {
-                otherCategoryInput.style.display = 'none';  // Ocultar
-                otherCategoryInput.required = false;        // Quitar obligatorio
-                otherCategoryInput.value = '';              // Limpiar
+                otherCategoryInput.classList.add('hidden'); 
+                otherCategoryInput.required = false;
+                otherCategoryInput.value = '';
+                otherCategoryInput.disabled = true; // DESHABILITAR
             }
         });
 
-        nextBtn.addEventListener('click', () => {
-            // Validamos solo los campos visibles
-            // El truco es que si el input "Otro" está oculto, no molestará
-            const inputs = step1.querySelectorAll('input:not([style*="display: none"]), select, textarea');
+        // --- EVENTOS DE NAVEGACIÓN ---
+
+        // Al avanzar al Paso 2: Deshabilita Paso 1, Habilita Paso 2
+        nextBtn.addEventListener('click', (e) => {
+            if (!form.checkValidity()) {
+                 form.reportValidity();
+                 return; 
+            }
             
-            let valid = true;
-            inputs.forEach(input => {
-                if(input.hasAttribute('required') && !input.value) {
-                    valid = false;
-                    input.style.border = "2px solid red";
-                } else {
-                    input.style.border = "1px solid #ccc";
-                }
-            });
-
-            if(valid) {
-                step1.classList.remove('active');
-                step2.classList.add('active');
-            } else {
-                alert("Por favor completa los campos obligatorios.");
-            }
+            // Deshabilita Paso 1 y Habilita Paso 2
+            toggleStepFields(step1, false); 
+            toggleStepFields(step2, true);
+            
+            step1.classList.remove('active');
+            step2.classList.add('active');
         });
 
+        // Al volver al Paso 1: Habilita Paso 1, Deshabilita Paso 2
         prevBtn.addEventListener('click', () => {
+            // Habilita Paso 1 y Deshabilita Paso 2
+            toggleStepFields(step2, false); 
+            toggleStepFields(step1, true); 
+
+            // Reajustar el input "Otro" (si no es 'Otro' debe estar deshabilitado)
+            if (categorySelect.value !== 'Otro') {
+                 otherCategoryInput.disabled = true;
+            }
+
             step2.classList.remove('active');
             step1.classList.add('active');
         });
+        
+        // --- SOLUCIÓN CRÍTICA: Copiar valores deshabilitados a campos ocultos al enviar ---
+        form.addEventListener('submit', (e) => {
+            // Recorremos los campos del Paso 1 (y los del Paso 2 al volver) que están disabled
+            const disabledFields = form.querySelectorAll('input:disabled, select:disabled, textarea:disabled');
+            
+            disabledFields.forEach(field => {
+                // Solo si el campo tiene un valor (para evitar enviar basura)
+                if (field.name && field.value) { 
+                     // Creamos un input hidden temporal con el valor del campo deshabilitado
+                     const hiddenInput = document.createElement('input');
+                     hiddenInput.type = 'hidden';
+                     hiddenInput.name = field.name;
+                     hiddenInput.value = field.value;
+                     form.appendChild(hiddenInput);
+                }
+            });
+            
+            // Nota: Aquí no necesitamos re-habilitar los campos originales. 
+            // Con el input hidden, Laravel recibe los datos aunque el original esté disabled.
+        });
+
+        // Inicializar el formulario al cargar la página
+        initializeForm();
     </script>
 
     <footer class="footer">
@@ -302,26 +376,26 @@
             <div>
                 <h3>Enlaces Rápidos</h3>
                 <ul>
-                    <li>Inicio</li>
-                    <li>Eventos</li>
-                    <li>Categorías</li>
-                    <li>Calendario</li>
+                    <li><a href="{{ route('dashboard.admin') }}">Inicio</a></li>
+                    <li><a href="#">Eventos</a></li> 
+                    <li><a href="#">Categorías</a></li>
+                    <li><a href="#">Calendario</a></li>
                 </ul>
             </div>
             <div>
                 <h3>Recursos</h3>
                 <ul>
-                    <li>Preguntas frecuentes</li>
-                    <li>Cómo inscribirse</li>
-                    <li>Políticas de evento</li>
+                    <li><a href="#">Preguntas frecuentes</a></li>
+                    <li><a href="#">Cómo inscribirse</a></li>
+                    <li><a href="#">Políticas de evento</a></li>
                 </ul>
             </div>
             <div>
                 <h3>Contactos</h3>
                 <ul>
-                    <li>Inicio</li>
-                    <li>Eventos</li>
-                    <li>Categorías</li>
+                    <li><a href="#">Información de Contacto</a></li>
+                    <li><a href="#">Ubicación</a></li>
+                    <li><a href="#">Redes Sociales</a></li>
                 </ul>
             </div>
         </div>
