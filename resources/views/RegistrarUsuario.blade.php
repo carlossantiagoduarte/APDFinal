@@ -12,25 +12,23 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Jomolhari&family=Kadwa:wght@400;700&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="styles/register.css">
+    <link rel="stylesheet" href="{{ asset('styles/register.css') }}">
 </head>
 
 <body>
 
-    <!-- CONTENEDOR PRINCIPAL -->
     <div class="register-container">
 
-        <!-- TEXTOS IZQUIERDA -->
         <div class="register-info">
             <h1>Registrate!</h1>
             <p>Para poder brindarte un mejor servicio</p>
         </div>
 
-        <!-- FORMULARIO -->
         <div class="register-form-box">
             <img src="{{ asset('images/logo.png') }}" class="register-logo" alt="Logo">
 
-            <form class="register-form" action="{{ route('registrarusuario.post') }}" method="POST">
+            {{-- ACCIÓN CORREGIDA: Apunta a la ruta POST de registro --}}
+            <form class="register-form" action="{{ route('register.post') }}" method="POST">
                 @csrf
                 <label>Nombre:</label>
                 <input type="text" name="nombre" required>
