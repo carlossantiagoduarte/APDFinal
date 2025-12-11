@@ -1,0 +1,713 @@
+/* RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;    
+}
+
+/* =============================== */
+/* NAVBAR */
+/* =============================== */
+.navbar {
+    font-family: 'Inter', sans-serif !important;
+    width: 100%;
+    background: #2E4A3F;
+    color: white;
+    padding: 16px 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.navbar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+/* Logo */
+.logo {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    animation: fadeIn 0.6s ease forwards;
+}
+
+.site-title {
+    font-family: 'Jomolhari';
+    font-size: clamp(20px, 5vw, 40px);
+    font-weight: 200;
+    opacity: 0;
+    animation: slideIn 0.6s ease forwards;
+    animation-delay: .15s;
+    margin-left: 10px;
+    white-space: nowrap;
+}
+
+/* USER MENU */
+.user-menu-container {
+    position: relative;
+}
+
+.user-name {
+    font-size: clamp(14px, 2vw, 18px);
+    font-weight: 500;
+    cursor: pointer;
+    padding: 8px 10px;
+    border-radius: 6px;
+    transition: background .2s, transform .25s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    opacity: 0;
+    animation: slideIn 0.6s ease forwards;
+    animation-delay: .3s;
+}
+
+.user-name:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+}
+
+.arrow {
+    width: 18px;
+    transition: transform 0.3s ease;
+}
+
+.dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    color: black;
+    width: 170px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    padding: 10px 0;
+    opacity: 0;
+    transform: translateY(-10px);
+    pointer-events: none;
+    transition: all 0.25s ease;
+    z-index: 10;
+}
+
+.dropdown.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.user-name.active .arrow {
+    transform: rotate(180deg);
+}
+
+.dropdown a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 15px;
+    text-decoration: none;
+    color: #111;
+    font-size: 16px;
+    transition: background 0.2s ease;
+}
+
+.dropdown a:hover {
+    background: #eee;
+}
+
+.dropdown a svg {
+    width: 20px;
+    height: 20px;
+    stroke: #111;
+    transition: stroke .2s ease, transform .2s ease;
+}
+
+.dropdown a:hover svg {
+    stroke: #000;
+    transform: scale(1.1);
+}
+
+/* ICONOS NAVBAR */
+.nav-icon {
+    width: 22px;
+    height: 22px;
+    stroke: white;
+    stroke-width: 1.8;
+    transition: transform .25s ease, stroke .25s ease;
+}
+
+.nav-icon:hover {
+    transform: scale(1.15);
+    stroke: #C8FFD7;
+}
+
+/* =============================== */
+/* ANIMACIONES */
+/* =============================== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.85);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* =============================== */
+/* HERO */
+/* =============================== */
+.hero {
+    width: 100%;
+    height: clamp(180px, 30vh, 300px);
+    background: url('../images/background-title-dashboard.jpeg') center/cover no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 40px;
+    padding: 0 5%;
+}
+
+.hero-title {
+    font-family: 'Kadwa';
+    color: white;
+    font-size: clamp(32px, 10vw, 150px);
+    font-weight: 800;
+    text-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
+    text-align: center;
+}
+
+/* =============================== */
+/* BUSCADOR */
+/* =============================== */
+.search-section {
+    max-width: 95%;
+    margin: auto;
+    padding: 15px;
+    border-radius: 30px;
+    border: 1px solid #000;
+}
+
+.search-box {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    border: 1px solid #000;
+    padding: 10px 20px;
+    border-radius: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.search-box input {
+    flex: 1 1 200px;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    border-radius: 15px;
+}
+
+.btn-search {
+    background: #6B4B3E;
+    color: white;
+    padding: 10px 22px;
+    border-radius: 15px;
+    border: none;
+    cursor: pointer;
+    flex: 0 0 auto;
+}
+
+.filters {
+    display: flex;
+    gap: 16px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.filters select {
+    padding: 10px 18px;
+    border-radius: 15px;
+    border: 1px solid #000;
+}
+
+/* =============================== */
+/* EVENTOS */
+/* =============================== */
+.events {
+    max-width: 95%;
+    margin: auto;
+    padding: 20px;
+}
+
+.new-event{
+    margin-left: 1060px;
+}
+
+.events-header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.view-all {
+    color: #000;
+    font-family: 'Inter';
+    font-size: clamp(16px, 2vw, 20px);
+    font-weight: 200;
+    text-decoration: none;
+    margin-top: 10px;
+}
+
+.events-header h2 {
+    font-family: 'Kadwa';
+    font-size: clamp(32px, 5vw, 64px);
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.events-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    width: 100%;
+}
+
+.event-card {
+    background: white;
+    border-radius: 20px;
+    border: 1px solid #ddd;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.event-img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.event-info {
+    padding: 15px;
+}
+
+.event-date,
+.event-description,
+.event-location,
+.event-title {
+    font-family: 'Inter';
+}
+
+.event-date {
+    font-size: clamp(14px, 2vw, 20px);
+    font-weight: 200;
+}
+
+.event-description {
+    font-size: clamp(12px, 2vw, 16px);
+    font-weight: 200;
+}
+
+.event-location {
+    font-size: clamp(12px, 2vw, 16px);
+    margin: 10px 0;
+}
+
+.event-title {
+    font-size: clamp(18px, 3vw, 24px);
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.btn-inscribir {
+    width: 100%;
+    margin-top: 12px;
+    padding: 10px;
+    background: #6B4B3E;
+    color: white;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+}
+
+/* =============================== */
+/* FOOTER */
+/* =============================== */
+.footer {
+    background: #3C3C3C;
+    color: white;
+    padding: 40px 5%;
+    font-family: 'Inter';
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.footer-grid h3 {
+    font-size: clamp(16px, 2vw, 20px);
+    font-weight: 250;
+}
+
+.footer-grid li,
+.footer-grid p {
+    font-size: clamp(12px, 1.5vw, 14px);
+    font-weight: 150;
+    margin: 5px 0;
+}
+
+.footer-copy {
+    text-align: center;
+    margin-top: 25px;
+}
+
+/* =============================== */
+/* RESPONSIVE GENERAL */
+/* =============================== */
+@media (max-width: 500px) {
+    .navbar {
+        flex-direction: column;
+        gap: 10px;
+        padding: 16px;
+    }
+
+    .hero-title {
+        font-size: clamp(24px, 8vw, 32px);
+    }
+
+    .search-box {
+        flex-direction: column;
+    }
+}
+
+/* =============================== */
+/* EVENT CARD HOVER SUAVE */
+/* =============================== */
+
+.event-card {
+    transition: transform 0.3s ease;
+}
+
+.event-card:hover {
+    transform: translateY(-10px);
+    /* sube 10px al pasar el cursor */
+}
+
+/* =============================== */
+/* BOTONES ADMIN EN EVENT CARD */
+/* =============================== */
+.admin-buttons {
+    margin-top: 10px;
+    display: flex;
+    gap: 8px;
+    justify-content: space-between;
+    margin: 10px 100px;
+}
+
+/* Botón Editar */
+.btn-edit {
+    padding: 6px 12px;
+    background: #2E4A3F;
+    /* verde */
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.btn-edit:hover {
+    background: #3f6455;
+    transform: translateY(-2px);
+}
+
+/* Botón Eliminar */
+.btn-delete {
+    padding: 6px 12px;
+    background: #2F4A6D;
+    /* rojo */
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.btn-delete:hover {
+    background: #da190b;
+    transform: translateY(-2px);
+}
+.event-card {
+    position: relative;
+    cursor: pointer;
+}
+
+.card-link {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+
+    /* Para que NO tape botones ni texto */
+    background: transparent;
+}
+
+/* Para que botones sigan funcionando */
+.event-card * {
+    position: relative;
+    z-index: 2;
+}
+
+/* ============================= */
+/* 1) LAPTOPS GRANDES (1400px+) */
+/* ============================= */
+@media (min-width: 1400px) {
+    .events-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .hero {
+        height: 320px;
+    }
+}
+
+/* ============================= */
+/* 2) LAPTOP MEDIANA (1200px) */
+/* ============================= */
+@media (max-width: 1200px) {
+    .new-event {
+        margin-left: 0;
+        text-align: right;
+        width: 100%;
+    }
+
+    .events-header {
+        gap: 20px;
+    }
+}
+
+/* ============================= */
+/* 3) LAPTOP PEQUEÑA (1024px) */
+/* ============================= */
+@media (max-width: 1024px) {
+
+    .navbar {
+        padding: 14px 4%;
+    }
+
+    .logo {
+        width: 52px;
+        height: 52px;
+    }
+
+    .site-title {
+        font-size: 26px;
+    }
+
+    .hero {
+        height: 240px;
+    }
+
+    .hero-title {
+        font-size: 60px;
+    }
+
+    .events-grid {
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
+
+    .event-img {
+        height: 180px;
+    }
+
+    .admin-buttons {
+        margin: 10px 20px;
+    }
+}
+
+/* ============================= */
+/* 4) TABLETS (768px) */
+/* ============================= */
+@media (max-width: 768px) {
+
+    .navbar {
+        flex-direction: column;
+        gap: 12px;
+        padding: 14px;
+    }
+
+    .user-menu-container {
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .hero {
+        height: 200px;
+    }
+
+    .hero-title {
+        font-size: 48px;
+    }
+
+    .search-box {
+        flex-direction: column;
+        padding: 15px;
+    }
+
+    .filters {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .events-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .new-event {
+        width: 100%;
+        text-align: center;
+        margin-left: 0;
+    }
+
+    .admin-buttons {
+        flex-direction: column;
+        margin: 10px 0;
+    }
+
+    .btn-edit,
+    .btn-delete {
+        width: 100%;
+    }
+}
+
+/* ============================= */
+/* 5) CELULARES GRANDES (600px) */
+/* ============================= */
+@media (max-width: 600px) {
+
+    .site-title {
+        font-size: 22px;
+    }
+
+    .hero {
+        height: 180px;
+    }
+
+    .hero-title {
+        font-size: 38px;
+    }
+
+    .search-section {
+        max-width: 100%;
+        padding: 10px;
+    }
+
+    .events-grid {
+        gap: 15px;
+    }
+
+    .event-img {
+        height: 160px;
+    }
+
+    .event-title {
+        font-size: 18px;
+    }
+
+    .event-description,
+    .event-location {
+        font-size: 13px;
+    }
+
+    .btn-inscribir {
+        font-size: 14px;
+        padding: 8px;
+    }
+}
+
+/* ============================= */
+/* 6) CELULARES PEQUEÑOS (420px) */
+/* ============================= */
+@media (max-width: 420px) {
+
+    .navbar-left {
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .logo {
+        width: 45px;
+        height: 45px;
+    }
+
+    .site-title {
+        font-size: 18px;
+        margin-left: 0;
+    }
+
+    .hero {
+        height: 160px;
+    }
+
+    .hero-title {
+        font-size: 30px;
+    }
+
+    .event-img {
+        height: 140px;
+    }
+
+    .admin-buttons {
+        gap: 6px;
+    }
+
+    .btn-edit,
+    .btn-delete {
+        font-size: 13px;
+        padding: 8px;
+    }
+}
+
+/* ============================= */
+/* 7) CELULARES MUY PEQUEÑOS (350px) */
+/* ============================= */
+@media (max-width: 350px) {
+    .hero-title {
+        font-size: 26px;
+    }
+
+    .event-title {
+        font-size: 16px;
+    }
+
+    .event-description {
+        font-size: 12px;
+    }
+}

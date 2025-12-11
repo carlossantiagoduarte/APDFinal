@@ -6,45 +6,49 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up(): void
-    {
-        Schema::create('events', function (Blueprint $table) {
-            $table->id();
+public function up(): void
+{
+    Schema::create('events', function (Blueprint $table) {
+        $table->id();
+        
+        // El creador del evento (Admin)
+        $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
 
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+        $table->string('title'); // Usamos 'title' como en tu modelo
+        $table->string('organizer')->nullable();
+        $table->string('location')->nullable();
+        $table->text('description')->nullable();
+        
+        // Contacto
+        $table->string('email')->nullable();
+        $table->string('phone')->nullable();
+        
+        // Detalles
+        $table->integer('max_participants')->nullable();
+        $table->text('requirements')->nullable();
+        
+        // Fechas y Horas
+        $table->date('start_date');
+        $table->date('end_date')->nullable();
+        $table->time('start_time')->nullable();
+        $table->time('end_time')->nullable();
+        
+        // Archivos e Imágenes (URLs)
+        $table->string('image_url')->nullable();
+        $table->string('banner_url')->nullable();
+        $table->string('documents_info')->nullable();
+        
+        // Configuración extra
+        $table->string('modality')->default('Presencial'); // Presencial/Virtual
+        $table->string('registration_link')->nullable();
+        $table->string('main_category')->nullable(); // Categoría principal (texto)
 
-            // Datos básicos
-            $table->string('title');
-            $table->string('organizer');
-            $table->string('location');
-            
-            // Mejorado: longText
-            $table->longText('description');
-            $table->string('email');
-            $table->string('phone');
-            $table->integer('max_participants');
-            $table->longText('requirements')->nullable();
+        // Estado para lógica del sistema
+        $table->boolean('is_active')->default(true); 
 
-            // Fechas
-            $table->date('start_date');
-            $table->date('end_date');
-            $table->time('start_time');
-            $table->time('end_time');
-
-            $table->string('image_url')->nullable();
-
-            // Mejorado: longText
-            $table->longText('documents_info')->nullable();
-
-            // Campos extra fusionados
-            $table->string('banner_url')->nullable();
-            $table->string('modality')->nullable();
-            $table->string('registration_link')->nullable();
-            $table->string('main_category',100)->nullable();
-
-            $table->timestamps();
-        });
-    }
+        $table->timestamps();
+    });
+}
 
     public function down(): void
     {

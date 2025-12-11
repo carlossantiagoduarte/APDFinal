@@ -1,63 +1,181 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\EventController;
+use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Juez\JuezController;
+use App\Http\Controllers\TeamController;
+use App\Http\Controllers\ProfileController;
+
+/*
+|--------------------------------------------------------------------------
+| RUTAS PÚBLICAS (No requieren inicio de sesión)
+|--------------------------------------------------------------------------
+*/
 
 Route::get('/', function () {
     return view('welcome');
+})->name('home');
+
+// Autenticación
+Route::controller(AuthController::class)->group(function () {
+    // LOGIN
+    Route::get('/iniciar-sesion', 'showLoginForm')->name('login');
+    Route::post('/iniciar-sesion', 'iniciarSesion')->name('login.submit');
+
+    // REGISTRO
+    Route::get('/registrar-usuario', 'showRegistrationForm')->name('register.view');
+    Route::post('/registrar-usuario', 'register')->name('register.post');
+
+    // LOGOUT
+    Route::post('/logout', 'logout')->name('logout');
 });
 
-Route::get('/iniciar-sesion', function () {
-    return view('IniciarSesion');
-})->name('iniciarsesion');
 
-Route::get('/Registrar-Usuario', function () {
-    return view('RegistrarUsuario');
-})->name('registrarusuario');
+/*
+|--------------------------------------------------------------------------
+| RUTAS PROTEGIDAS (Requieren estar logueado)
+|--------------------------------------------------------------------------
+*/
 
-Route::get('/dashboard', function () {
-    return view('Dashboard');
-})->name('dashboard');
+Route::middleware(['auth'])->group(function () {
 
-Route::get('/crear-evento', function () {
-    return view('Admin.CrearEvento');
-})->name('crearevento');
+    /*
+    |--------------------------------------------------------------------------
+    | 1. RUTAS COMUNES (Accesibles para todos los roles)
+    |--------------------------------------------------------------------------
+    */
 
-Route::get('unirse-a-equipo', function () {
-    return view('Estudiante.UnirseAEquipo');
-})->name('unirseaequipo');
+    // Dashboard Genérico
+    Route::get('/dashboard', function () {
+        $user = Auth::user();
 
-Route::get('/crear-equipo', function () {
-    return view('Estudiante.CrearEquipo');
-})->name('crearequipo');
+        if ($user->hasRole('Admin')) {
+            return redirect()->route('dashboard.admin');
+        } elseif ($user->hasRole('Estudiante')) {
+            return redirect()->route('dashboard.estudiante');
+        } elseif ($user->hasRole('Juez')) {
+            return redirect()->route('dashboard.juez');
+        }
 
-Route::get('/editar-evento', function () {
-    return view('Admin.EditarEvento');
-})->name('editarevento');
+        return redirect()->route('home');
+    })->name('dashboard');
 
-Route::get('entrega-proyecto', function () {
-    return view('Estudiante.EntregaProyecto');
-})->name('entrega-proyecto');
+    // Perfil del Usuario
+    Route::controller(ProfileController::class)->prefix('perfil')->group(function () {
+        Route::get('/editar', 'edit')->name('profile.edit');
+        Route::put('/actualizar', 'update')->name('profile.update');
+    });
 
-Route::get('dashboard/equipos', function () {
-    return view('Dashboard.Equipos');
-})->name('dashboard/equipos');
+    // Rutas de Eventos (Lectura pública)
+    Route::get('/eventos/{event}', [EventController::class, 'show'])->name('events.show');
+    Route::get('/eventos/{event}/resultados', [AdminController::class, 'showEventResults'])->name('events.results');
 
-Route::get('/calificar-equipo', function () {
-    return view('Juez.CalificarEquipo');
-})->name('calificar-equipo');
+    // Archivos (Descarga de Proyecto)
+    Route::get('/equipos/{team}/descargar-proyecto', [EventController::class, 'descargarArchivo'])->name('events.download');
 
-Route::get('/juez', function () {
-    return view('Juez.Juez');
-})->name('juez');
 
-Route::get('/estudiante', function () {
-    return view('Estudiante.Estudiante');
-})->name('estudiante');
+    /*
+    |--------------------------------------------------------------------------
+    | 2. ZONA ADMINISTRADOR (Middleware: role:admin)
+    |--------------------------------------------------------------------------
+    | Prefijo URI: /admin
+    */
+    Route::middleware(['role:admin'])->prefix('admin')->group(function () {
 
-Route::get('/admin', function () {
-    return view('Admin.Admin');
-})->name('admin');
+        // Dashboard
+        Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard.admin');
 
-Route::get('/editar-perfil', function () {
-    return view('EditarPerfil');
-})->name('editarperfil');
+        // Gestión de Eventos (CRUD)
+        Route::controller(AdminController::class)->prefix('eventos')->group(function () {
+            Route::get('/crear', 'create')->name('events.create');
+            Route::post('/', 'store')->name('events.store');
+            Route::get('/{event}/editar', 'edit')->name('events.edit');
+            Route::put('/{event}', 'update')->name('events.update');
+            Route::delete('/{event}', 'destroy')->name('events.destroy');
+            Route::delete('/admin/teams/{team}', [TeamController::class, 'destroy'])->name('teams.destroy');
+
+            // Acciones específicas
+            Route::get('/{event}/reporte-pdf', 'descargarReporte')->name('events.pdf');
+            // AGREGADO: Ruta para Excel
+            Route::get('/{event}/reporte-excel', 'descargarExcel')->name('events.excel');
+
+            Route::post('/{event}/ganadores', 'setWinners')->name('events.setWinners');
+        });
+
+        // --- GESTIÓN DE USUARIOS ---
+
+        // Ver lista de usuarios
+        Route::get('/gestion', [AdminController::class, 'gestionUsuarios'])->name('gestion');
+
+        // Actualizar rol de usuario
+        Route::put('/usuario/{id}/rol', [AdminController::class, 'updateUserRole'])->name('users.updateRole');
+
+        // Eliminar usuario
+        Route::delete('/usuario/{id}', [AdminController::class, 'destroyUser'])->name('users.destroy');
+    });
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | 3. ZONA ESTUDIANTE (Middleware: role:student)
+    |--------------------------------------------------------------------------
+    | Prefijo URI: /estudiante
+    */
+    Route::middleware(['role:student'])->prefix('estudiante')->group(function () {
+
+        // Dashboard
+        Route::get('/dashboard', [EventController::class, 'dashboardEstudiante'])->name('dashboard.estudiante');
+
+        // Panel del Evento (HUB)
+        Route::get('/eventos/{event}', [EventController::class, 'verEventoEstudiante'])->name('student.event.show');
+
+        // GESTIÓN DE EQUIPOS
+        Route::controller(TeamController::class)->prefix('equipos')->group(function () {
+            Route::get('/crear', 'create')->name('teams.create');
+            Route::post('/', 'store')->name('teams.store');
+
+            Route::get('/unirse', 'vistaUnirse')->name('teams.join.view');
+            Route::post('/solicitar', 'solicitarUnirse')->name('teams.join.request');
+            Route::post('/unirse/codigo', 'unirsePorCodigo')->name('teams.join.code');
+
+            Route::get('/solicitudes', 'verSolicitudes')->name('teams.requests');
+            Route::post('/solicitudes/{usuarioId}', 'responderSolicitud')->name('teams.respond');
+        });
+
+        // ENTREGA DE PROYECTO
+        Route::controller(EventController::class)->group(function () {
+            Route::get('/entrega-proyecto/{team}', 'vistaEntrega')->name('delivery.view');
+            Route::post('/equipos/{team}/subir-archivo', 'subirArchivo')->name('teams.upload_file');
+        });
+
+        // REPORTES
+        Route::get('/constancia/{event}', [EventController::class, 'descargarConstancia'])->name('student.certificate');
+        Route::post('/equipos/{team}/salir', [TeamController::class, 'leave'])->name('teams.leave');
+        Route::post('/equipos/{team}/sacar', [TeamController::class, 'removeMember'])->name('teams.remove_member');
+    });
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | 4. ZONA JUEZ (Middleware: role:judge)
+    |--------------------------------------------------------------------------
+    | Prefijo URI: /juez
+    */
+    Route::middleware(['role:judge'])->prefix('juez')->group(function () {
+
+        // Dashboard
+        Route::get('/dashboard', [JuezController::class, 'index'])->name('dashboard.juez');
+
+        // Calificación de Equipos
+        Route::controller(JuezController::class)->prefix('eventos')->group(function () {
+            Route::get('/{event}/equipos', 'verEquipos')->name('judge.teams');
+
+            Route::get('/equipos/{team}/detalle', 'verDetalleEquipo')->name('judge.team.details');
+
+            Route::post('/equipos/{team}/calificar', 'calificar')->name('judge.score');
+        });
+    });
+});

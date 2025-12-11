@@ -1,0 +1,70 @@
+body {
+            font-family: 'Times New Roman', serif;
+            text-align: center;
+            padding: 40px;
+            border: 10px solid #111; /* Marco exterior */
+            position: relative; /* Necesario para posicionar el borde interno */
+        }
+        .inner-border {
+            border: 2px solid #666; /* Marco interior */
+            padding: 30px;
+            height: 90%;
+            /* Utilizamos padding en el body para el marco, ajustamos el tamaño */
+        }
+        h1 {
+            font-size: 40px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            color: #1a1a1a;
+        }
+        h2 {
+            font-size: 20px;
+            font-weight: normal;
+            margin-top: 0;
+            color: #555;
+        }
+        .name {
+            font-size: 35px;
+            font-weight: bold;
+            margin: 30px 0;
+            border-bottom: 1px solid #333;
+            display: inline-block;
+            padding: 0 20px;
+            color: #000;
+        }
+        .text {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #333;
+            margin: 20px 50px;
+        }
+        .evaluation-details {
+            width: 100%;
+            margin-top: 50px;
+            display: table; /* Usamos tabla para la distribución */
+            table-layout: fixed;
+            border-collapse: collapse;
+        }
+        .evaluation-details > div {
+            display: table-cell;
+            width: 50%;
+            padding: 0 10px;
+        }
+        .signature-line {
+            border-top: 1px solid #333;
+            width: 80%;
+            margin: 10px auto 0 auto;
+            padding-top: 5px;
+            font-size: 14px;
+        }
+        .grade {
+            font-size: 30px;
+            font-weight: bold;
+            color: #007bff;
+            border: 3px solid #007bff;
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            line-height: 74px; /* Ajuste para centrar verticalmente */
+            margin: 10px auto 20px auto;
+        }

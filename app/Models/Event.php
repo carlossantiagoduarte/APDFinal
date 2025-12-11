@@ -29,6 +29,7 @@ class Event extends Model
         'modality',
         'registration_link',
         'main_category',
+        'is_active', // Asegúrate de incluir este si lo usas en el controlador
     ];
 
     public function user()
@@ -44,5 +45,20 @@ class Event extends Model
     public function categories()
     {
         return $this->belongsToMany(Category::class, 'event_category');
+    }
+
+    /**
+     * ESTA ES LA FUNCIÓN QUE FALTABA
+     * Relación Muchos a Muchos con Jueces (Usuarios)
+     */
+    public function jueces()
+    {
+        // Se asume que la tabla pivote se llama 'event_juez'
+        // Si tu tabla se llama diferente (ej: 'event_user'), cámbialo aquí.
+        return $this->belongsToMany(User::class, 'event_juez', 'event_id', 'user_id');
+    }
+    public function criteria()
+    {
+        return $this->hasMany(EventCriterion::class);
     }
 }

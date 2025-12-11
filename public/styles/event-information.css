@@ -144,6 +144,7 @@
     stroke: #C8FFD7;
 }
 
+
 /* =============================== */
 /* ANIMACIONES */
 /* =============================== */
@@ -430,6 +431,24 @@ button:hover {
     max-width: 780px;
   }
 }
+
+/*
+Regresar
+*/
+
+/* Ajustes para modo lectura */
+        input:disabled, textarea:disabled, select:disabled {
+            background-color: #f9f9f9;
+            color: #333;
+            border: 1px solid #ddd;
+            cursor: default;
+        }
+        .back-link {
+            display: inline-flex; align-items: center; gap: 8px; text-decoration: none;
+            color: #333; font-weight: bold; margin: 20px 0 0 40px; padding: 8px 12px;
+            border-radius: 5px; transition: background 0.2s;
+        }
+        .back-link:hover { background-color: #f0f0f0; }
 
 
 /* ================================

@@ -3,302 +3,319 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Unirse a equipo | CodeVision</title>
+    <title>Crear Equipo | CodeVision</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../styles/crear-team.css">
+    
+    <link rel="stylesheet" href="{{ asset('styles/crear-team.css') }}">
+    <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Jomolhari&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ESTILOS MEJORADOS DIRECTOS PARA ESTA VISTA */
+        body {
+            background-color: #f3f4f6; /* Fondo gris claro suave */
+            font-family: 'Inter', sans-serif;
+        }
 
-    <link rel="icon" type="image/png" href="../images/logo.png">
+        .main-container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
 
-    <link href="https://fonts.googleapis.com/css2?family=Kadwa:wght@700&family=Inter:wght@300;400;600&display=swap"
-        rel="stylesheet">
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const toggle = document.getElementById("user-toggle");
-            const menu = document.getElementById("user-menu");
+        .form-card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 40px;
+            overflow: hidden;
+        }
 
-            toggle.addEventListener("click", () => {
-                toggle.classList.toggle("active");
-                menu.classList.toggle("show");
-            });
+        .page-title {
+            font-family: 'Jomolhari', serif;
+            font-size: 2rem;
+            color: #1f2937;
+            margin-bottom: 10px;
+            text-align: center;
+        }
 
-            document.addEventListener("click", (e) => {
-                if (!toggle.contains(e.target) && !menu.contains(e.target)) {
-                    toggle.classList.remove("active");
-                    menu.classList.remove("show");
-                }
-            });
-        });
-    </script>
+        .page-subtitle {
+            text-align: center;
+            color: #6b7280;
+            margin-bottom: 30px;
+            font-size: 1rem;
+        }
+
+        /* GRID DE FORMULARIO */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .form-card { padding: 25px; }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 1rem;
+            color: #111;
+            transition: all 0.3s ease;
+            box-sizing: border-box; /* Vital para que no se salga */
+            background-color: #f9fafb;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #2563eb;
+            background-color: #fff;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-control.readonly {
+            background-color: #e5e7eb;
+            color: #6b7280;
+            cursor: not-allowed;
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* EVENTO PRESELECCIONADO */
+        .event-badge {
+            background-color: #eff6ff;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* BOTONES */
+        .actions-row {
+            margin-top: 30px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            border-top: 1px solid #f3f4f6;
+            padding-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            border: none;
+            transition: transform 0.1s, box-shadow 0.2s;
+        }
+
+        .btn:active { transform: scale(0.98); }
+
+        .btn-primary {
+            background-color: #2563eb; /* Azul */
+            color: white;
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+        }
+        .btn-primary:hover { background-color: #1d4ed8; }
+
+        .btn-secondary {
+            background-color: #f3f4f6;
+            color: #4b5563;
+            border: 1px solid #d1d5db;
+        }
+        .btn-secondary:hover { background-color: #e5e7eb; color: #111; }
+
+        /* VISTA DE ÉXITO */
+        .success-card {
+            text-align: center;
+            padding: 50px 20px;
+        }
+        .success-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+        .invite-code-box {
+            background: #f0fdf4;
+            border: 2px dashed #22c55e;
+            color: #15803d;
+            font-size: 2rem;
+            font-weight: 800;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px auto;
+            max-width: 400px;
+            letter-spacing: 2px;
+        }
+        .btn-copy {
+            background: none;
+            border: none;
+            color: #2563eb;
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-bottom: 30px;
+        }
+    </style>
 </head>
 
 <body>
 
-    <!-- NAVBAR -->
     <nav class="navbar">
-
         <div class="navbar-left">
-            <!-- LOGO -->
-            <img src="../images/logo.png" class="logo">
-            <span class="site-title">CodeVision</span>
+            <a href="{{ route('dashboard.estudiante') }}" style="text-decoration:none; color:inherit; display:flex; align-items:center; gap:10px;">
+                <img src="{{ asset('images/logo.png') }}" class="logo">
+                <span class="site-title">CodeVision</span>
+            </a>
         </div>
-
         <div class="user-menu-container">
-
-            <!-- NOMBRE DEL USUARIO -->
             <div id="user-toggle" class="user-name">
-                Andrés López
-
-                <!-- FLECHITA -->
-                <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="6 9 12 15 18 9" />
-                </svg>
+                {{ Auth::user()->name }} {{ Auth::user()->lastname ?? '' }}
             </div>
-
-            <!-- MENU -->
-            <div id="user-menu" class="dropdown">
-
-                <a href="#">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <path d="M3 9.5L12 3l9 6.5V21H3z" />
-                    </svg>
-                    Inicio
-                </a>
-
-                <a href="#">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <circle cx="12" cy="7" r="4" />
-                        <path d="M5.5 21a6.5 6.5 0 0 1 13 0" />
-                    </svg>
-                    Perfil
-                </a>
-
-                <a href="#">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                        <polyline points="16 17 21 12 16 7" />
-                        <line x1="21" y1="12" x2="9" y2="12" />
-                    </svg>
-                    Cerrar sesión
-                </a>
-
-            </div>
-
         </div>
-
     </nav>
 
+    <div class="main-container">
 
-<!-- SECCIÓN 1 — FORMULARIO PRINCIPAL -->
-    <section id="step1" class="step active">
+        @if(session('equipo_creado'))
+            <div class="form-card success-card">
+                <span class="success-icon">🎉</span>
+                <h1 class="page-title">¡Equipo Creado Exitosamente!</h1>
+                <p class="page-subtitle">Tu equipo está listo. Comparte este código con tus compañeros para que se unan.</p>
 
-        <div class="header-banner">Registra tu Equipo Aquí!</div>
+                <div class="invite-code-box" id="inviteCode">{{ session('equipo_creado') }}</div>
+                
+                <button class="btn-copy" onclick="copiarCodigo()">📋 Copiar código al portapapeles</button>
+                
+                <br>
+                <button class="btn btn-primary" onclick="window.location.href='{{ route('dashboard.estudiante') }}'">Ir al Dashboard</button>
+            </div>
 
-        <div class="form-container">
+        @else
 
-            <h1 class="title">Formulario de Inscripción</h1>
+            <div class="form-card">
+                <h1 class="page-title">Crear Nuevo Equipo</h1>
+                <p class="page-subtitle">Completa los datos para registrar a tu equipo en el evento.</p>
 
-            <div class="form-grid">
-
-                <div class="event-card">
-                    <img src="https://images.unsplash.com/photo-1518770660439-4636190af475" alt="event">
-                    <h3>Título del Evento</h3>
-                    <p>Descripción del evento</p>
-
-                    <div class="details">
-                        <p>📅 Fecha y hora</p>
-                        <p>📍 Ubicación</p>
-                        <p>👥 Número de personas</p>
+                @if($errors->any())
+                    <div style="background:#fee2e2; color:#b91c1c; padding:15px; border-radius:8px; margin-bottom:25px; border: 1px solid #fecaca;">
+                        <ul style="margin: 0; padding-left: 20px;">
+                            @foreach ($errors->all() as $error) <li>{{ $error }}</li> @endforeach
+                        </ul>
                     </div>
-                </div>
+                @endif
 
-                <form id="form1">
+                <form action="{{ route('teams.store') }}" method="POST">
+                    @csrf
 
-                    <label>Nombre del Equipo</label>
-                    <input type="text" required placeholder="Nombre de tu equipo">
+                    <div class="form-grid">
+                        
+                        <div class="col-left">
+                            <div class="form-group">
+                                <label>Evento Seleccionado</label>
+                                @if(isset($eventoPreseleccionado) && $eventoPreseleccionado)
+                                    <div class="event-badge">
+                                        🏆 {{ $eventoPreseleccionado->title }}
+                                    </div>
+                                    <input type="hidden" name="event_id" value="{{ $eventoPreseleccionado->id }}">
+                                @else
+                                    <select name="event_id" class="form-control" required>
+                                        <option value="" disabled selected>-- Elige un evento --</option>
+                                        @foreach($events as $event)
+                                            <option value="{{ $event->id }}">{{ $event->title }}</option>
+                                        @endforeach
+                                    </select>
+                                @endif
+                            </div>
 
-                    <label>Nombre Completo</label>
-                    <input type="text" required placeholder="Tu nombre completo">
+                            <div class="form-group">
+                                <label>Nombre del Equipo</label>
+                                <input type="text" name="name" class="form-control" required placeholder="Ej: Los Innovadores" value="{{ old('name') }}">
+                            </div>
 
-                    <label>Correo Electrónico</label>
-                    <input type="email" required placeholder="example@gmail.com">
+                            <div class="form-group">
+                                <label>Visibilidad del Equipo</label>
+                                <select name="visibility" class="form-control" required>
+                                    <option value="public">🌍 Público (Cualquiera puede unirse)</option>
+                                    <option value="private">🔒 Privado (Solo con código)</option>
+                                </select>
+                            </div>
 
-                    <label>Carrera</label>
-                    <input type="text" required placeholder="Carrera a la que perteneces">
+                            <div class="form-group">
+                                <label>Máximo de Integrantes</label>
+                                <input type="number" name="max_members" class="form-control" min="2" max="10" value="5" required>
+                            </div>
+                        </div>
 
-                    <label>Semestre</label>
-                    <input type="text" required placeholder="Semestre que cursas">
+                        <div class="col-right">
+                            <div class="form-group">
+                                <label>Líder del Equipo (Tú)</label>
+                                <input type="text" class="form-control readonly" value="{{ Auth::user()->name }} {{ Auth::user()->lastname }}" readonly>
+                            </div>
 
-                    <label>Experiencia (Opcional)</label>
-                    <textarea placeholder="Experiencia con la que cuentas"></textarea>
+                            <div class="form-group">
+                                <label>Correo de Contacto</label>
+                                <input type="email" class="form-control readonly" value="{{ Auth::user()->email }}" readonly>
+                            </div>
 
-                    <label>Número de integrantes del equipo</label>
-                    <input type="number" id="totalMembers" min="2" value="5" required>
+                            <div class="form-group">
+                                <label>Requisitos para unirse (Opcional)</label>
+                                <textarea name="requirements" class="form-control" rows="5" placeholder="Ej: Buscamos diseñadores, programadores Java, etc...">{{ old('requirements') }}</textarea>
+                            </div>
+                        </div>
 
-                    <label>Equipo privado o público</label>
-                    <select>
-                        <option>Privado</option>
-                        <option>Público</option>
-                    </select>
+                    </div> <div class="actions-row">
+                        <button type="button" class="btn btn-secondary" 
+                            onclick="window.location.href='{{ isset($eventoPreseleccionado) ? route('student.event.show', $eventoPreseleccionado->id) : route('dashboard.estudiante') }}'">
+                            Cancelar
+                        </button>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            ✨ Crear Equipo
+                        </button>
+                    </div>
 
-                    
-                    <button type="button" class="btn-secondary" onclick="goToStep1()">Cancelar</button>
-                    <button type="button" class="btn-primary" onclick="goToStep2()">Siguiente</button>
                 </form>
-
             </div>
-        </div>
+        @endif
 
-    </section>
+    </div>
 
-    <!-- SECCIÓN 2 — MIEMBROS DINÁMICOS -->
-    <section id="step2" class="step">
+    <footer class="footer">
+        <p class="footer-copy">© {{ date('Y') }} CodeVision</p>
+    </footer>
 
-        <div class="header-banner">Registra tu Equipo Aquí!</div>
-
-        <div class="members-container">
-
-            <h2>Miembros del Equipo</h2>
-
-            <form id="membersForm">
-                <div id="membersDynamic"></div>
-
-                <label>Requisitos de los participantes</label>
-                <textarea placeholder="Escribe los requisitos necesarios..."></textarea>
-
-                <div class="buttons-row">
-                    <button type="button" class="btn-secondary" onclick="goToStep1()">Cancelar</button>
-                    <button type="button" class="btn-primary" onclick="goToStep3()">Siguiente</button>
-                </div>
-            </form>
-
-        </div>
-
-    </section>
-
-    <!-- SECCIÓN 3 — CÓDIGO GENERADO -->
-    <section id="step3" class="step">
-
-        <div class="final-container">
-            <h1>¡Equipo creado!</h1>
-            <p>Comparte tu código de invitación</p>
-
-            <div class="invite-box">
-                <h3>CÓDIGO DE INVITACIÓN</h3>
-                <div id="inviteCode">ITO-XXXX-TEAM</div>
-
-                <button class="btn-copy" onclick="navigator.clipboard.writeText(inviteCode.innerText)">
-                    Copiar código
-                </button>
-            </div>
-
-            <button class="btn-primary" onclick="goToStep1()">Cerrar</button>
-        </div>
-
-    </section>
-
-    <!-- ========================== -->
-    <!--      SCRIPT LÓGICA JS      -->
-    <!-- ========================== -->
     <script>
-        function goToStep1() {
-            showStep(1);
-        }
-
-        function goToStep2() {
-            const total = parseInt(document.getElementById("totalMembers").value);
-
-            if (total < 2) return alert("Debe haber al menos 2 integrantes.");
-
-            generateMembers(total - 1);
-            showStep(2);
-        }
-
-        function goToStep3() {
-            generateInviteCode();
-            showStep(3);
-        }
-
-        function showStep(num) {
-            document.querySelectorAll(".step").forEach(s => s.classList.remove("active"));
-            document.querySelector("#step" + num).classList.add("active");
-        }
-
-        function generateMembers(count) {
-            const container = document.getElementById("membersDynamic");
-            container.innerHTML = "";
-
-            for (let i = 1; i <= count; i++) {
-                container.innerHTML += `
-                <div class="member-box">
-                <h3>Miembro ${i}</h3>
-
-                <div class="member-label">Nombre Completo</div>
-                <div class="member-input"><input type="text" placeholder="Nombre completo" required></div>
-
-                <div class="member-label">Correo Electrónico</div>
-                <div class="member-input"><input type="email" placeholder="example@gmail.com" required></div>
-
-                <div class="member-label">Carrera</div>
-                <div class="member-input"><input type="text" placeholder="Ing./Lic." required></div>
-
-                <div class="member-label">Número de contacto</div>
-                <div class="member-input"><input type="tel" placeholder="Número de teléfono" required></div>
-            </div>
-                `;
-            }
-        }
-
-        function generateInviteCode() {
-            const random = Math.random().toString(36).substring(2, 6).toUpperCase();
-            document.getElementById("inviteCode").innerText = `ITO-${random}-TEAM`;
+        function copiarCodigo() {
+            const codigo = document.getElementById("inviteCode").innerText;
+            navigator.clipboard.writeText(codigo).then(() => {
+                alert("¡Código copiado al portapapeles!");
+            });
         }
     </script>
 
-        <!-- FOOTER -->
-    <footer class="footer">
-        <div class="footer-grid">
-
-            <div>
-                <h3>CodeVision</h3>
-                <p>Plataforma oficial del Instituto Tecnológico de Oaxaca para gestión de eventos tecnológicos.</p>
-            </div>
-
-            <div>
-                <h3>Enlaces Rápidos</h3>
-                <ul>
-                    <li>Inicio</li>
-                    <li>Eventos</li>
-                    <li>Categorías</li>
-                    <li>Calendario</li>
-                </ul>
-            </div>
-
-            <div>
-                <h3>Recursos</h3>
-                <ul>
-                    <li>Preguntas frecuentes</li>
-                    <li>Cómo inscribirse</li>
-                    <li>Políticas de evento</li>
-                </ul>
-            </div>
-
-            <div>
-                <h3>Contactos</h3>
-                <ul>
-                    <li>Inicio</li>
-                    <li>Eventos</li>
-                    <li>Categorías</li>
-                </ul>
-            </div>
-
-        </div>
-
-        <p class="footer-copy">© 2023 CodeVision - Instituto Tecnológico de Oaxaca</p>
-    </footer>
 </body>
-
 </html>

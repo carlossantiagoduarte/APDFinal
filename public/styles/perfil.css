@@ -316,6 +316,31 @@
     }
 }
 
+/* flecha para atras
+/* ... Estilos CSS ... */
+        .profile-back-arrow {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: #f0f0f0;
+            border-radius: 50%;
+            text-decoration: none;
+            color: #333;
+            font-size: 1.5rem;
+            margin: 20px 0 0 40px; 
+            transition: background 0.3s;
+            position: absolute; 
+            top: 80px; 
+            left: 20px;
+        }
+        .profile-back-arrow:hover {
+            background-color: #ddd;
+        }
+
+
+
 
 /* ================================= */
 /* LAPTOPS PEQUEÑAS y TABLETS GRANDES */

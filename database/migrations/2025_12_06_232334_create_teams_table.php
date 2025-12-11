@@ -6,41 +6,41 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up(): void
-    {
-        Schema::create('teams', function (Blueprint $table) {
-            $table->id();
+   public function up(): void
+{
+    Schema::create('teams', function (Blueprint $table) {
+        $table->id();
+        
+        // Relaciones Obligatorias
+        $table->foreignId('event_id')->constrained('events')->onDelete('cascade');
+        $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); // El creador/líder (usuario real)
 
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('event_id')->constrained()->onDelete('cascade');
+        // Datos del Equipo
+        $table->string('name');
+        $table->text('description')->nullable();
+        $table->string('team_logo')->nullable();
+        
+        // Datos del Líder (Información extra solicitada en formulario)
+        $table->string('leader_name')->nullable();
+        $table->string('leader_email')->nullable();
+        $table->string('leader_career')->nullable();
+        $table->string('leader_semester')->nullable();
+        $table->string('leader_experience')->nullable();
 
-            $table->string('name');
-            $table->string('leader_name');
-            $table->string('leader_email');
-            $table->string('leader_career');
-            $table->string('leader_semester');
+        // Configuración del Equipo
+        $table->integer('max_members')->default(5);
+        $table->enum('visibility', ['public', 'private'])->default('public');
+        $table->string('invite_code')->nullable()->unique(); // Para unirse a equipos privados
+        
+        // Requisitos
+        $table->text('requirements')->nullable();
+        $table->text('skills_needed')->nullable();
 
-            // Mejorado: longText
-            $table->longText('leader_experience')->nullable();
-
-            $table->integer('max_members');
-
-            $table->enum('visibility',['Privado','Público']);
-
-            // Mejorado: longText
-            $table->longText('requirements')->nullable();
-
-            $table->string('invite_code')->unique();
-
-            // Extra campos fusionados
-            $table->string('team_logo')->nullable();
-            $table->longText('description')->nullable();
-            $table->longText('skills_needed')->nullable();
-
-            $table->timestamps();
-        });
-    }
-
+        $table->string('project_name')->nullable(); // Por si ya tienen nombre de proyecto
+        
+        $table->timestamps();
+    });
+}
     public function down(): void
     {
         Schema::dropIfExists('teams');

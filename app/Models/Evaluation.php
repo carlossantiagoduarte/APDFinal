@@ -5,21 +5,25 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class TeamMember extends Model
+class Evaluation extends Model
 {
     use HasFactory;
 
+    // ESTO ES LO QUE TE FALTA:
     protected $fillable = [
         'team_id',
-        'name',
-        'email',
-        'career',
-        'phone',
-        'role',
+        'user_id',
+        'score',
+        'feedback',
     ];
 
     public function team()
     {
         return $this->belongsTo(Team::class);
+    }
+
+    public function judge()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

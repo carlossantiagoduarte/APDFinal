@@ -4,40 +4,70 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\User;
+use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        // 1. Crear el usuario Admin y asignarle el rol
+        // ---------------------------------------------------
+        // 1. ADMIN (Ya lo tenías, lo dejo por si acaso)
+        // ---------------------------------------------------
+        $roleAdmin = Role::firstOrCreate(['name' => 'Admin']);
+        
         $admin = User::create([
             'name' => 'Admin User',
+            'lastname' => 'Principal',
             'email' => 'admin@example.com',
             'password' => Hash::make('password'),
+            'role' => 'admin', // Columna BD (minúsculas)
         ]);
-        $admin->assignRole('Admin');
 
-        // 2. Crear el usuario Juez
+        $admin->assignRole($roleAdmin);
+               $admin = User::create([
+            'name' => 'Abraham',
+            'lastname' => 'Cano',
+            'email' => 'abraham@example.com',
+            'password' => Hash::make('password'),
+            'role' => 'admin', // Columna BD (minúsculas)
+        ]);
+        $admin->assignRole($roleAdmin);
+
+
+        // ---------------------------------------------------
+        // 2. JUEZ (Formato Nuevo)
+        // ---------------------------------------------------
+        // Aseguramos que el rol de Spatie exista
+        $roleJuez = Role::firstOrCreate(['name' => 'Juez']);
+
         $juez = User::create([
             'name' => 'Juez Creador',
+            'lastname' => 'Pérez', // Agregué apellido para completar tu tabla
             'email' => 'juez@example.com',
             'password' => Hash::make('password'),
+            'role' => 'judge', // <--- IMPORTANTE: Debe coincidir con el enum de la migración ('judge')
         ]);
-        $juez->assignRole('Juez');
+        // Asignamos el rol de Spatie
+        $juez->assignRole($roleJuez);
 
-        // 3. Crear el usuario Estudiante
+        // ---------------------------------------------------
+        // 3. ESTUDIANTE (Formato Nuevo)
+        // ---------------------------------------------------
+        // Aseguramos que el rol de Spatie exista
+        $roleEstudiante = Role::firstOrCreate(['name' => 'Estudiante']);
+
         $estudiante = User::create([
             'name' => 'Estudiante Proy',
+            'lastname' => 'López', // Agregué apellido
             'email' => 'estudiante@example.com',
             'password' => Hash::make('password'),
+            'role' => 'student', // <--- IMPORTANTE: Debe coincidir con el enum de la migración ('student')
         ]);
-        $estudiante->assignRole('Estudiante');
+        // Asignamos el rol de Spatie
+        $estudiante->assignRole($roleEstudiante);
 
-        // Mensaje en consola
-        $this->command->info('Usuarios creados con roles asignados: Admin, Juez, Estudiante (password: password).');
+        // Mensaje final
+        $this->command->info('Usuarios creados correctamente: Admin, Juez y Estudiante.');
     }
 }

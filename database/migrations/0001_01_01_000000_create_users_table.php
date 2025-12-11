@@ -7,42 +7,32 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     public function up(): void
-    {
-        Schema::create('users', function (Blueprint $table) {
-            $table->id();
+{
+    Schema::create('users', function (Blueprint $table) {
+        $table->id();
+        $table->string('name');
+        $table->string('lastname')->nullable(); // Tu campo personalizado
+        $table->string('email')->unique();
+        $table->string('phone')->nullable();    // Tu campo personalizado
+        $table->timestamp('email_verified_at')->nullable();
+        $table->string('password');
+        
+        // Roles: Define quién es quién
+        $table->enum('role', ['admin', 'judge', 'student'])->default('student');
+        
 
-            $table->string('name');
-            $table->string('lastname',100)->nullable();
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-
-            // Mejorado: password nullable
-            $table->string('password')->nullable();
-
-            // Campos extra fusionados
-            $table->string('phone',20)->nullable();
-            $table->string('google_id')->nullable();
-            $table->string('facebook_id')->nullable();
-
-            $table->rememberToken();
-            $table->timestamps();
-        });
-
-        Schema::create('password_reset_tokens', function (Blueprint $table) {
-            $table->string('email')->primary();
-            $table->string('token');
-            $table->timestamp('created_at')->nullable();
-        });
-
-        Schema::create('sessions', function (Blueprint $table) {
-            $table->string('id')->primary();
-            $table->foreignId('user_id')->nullable()->index();
-            $table->string('ip_address', 45)->nullable();
-            $table->text('user_agent')->nullable();
-            $table->longText('payload');
-            $table->integer('last_activity')->index();
-        });
-    }
+        $table->rememberToken();
+        $table->timestamps();
+    });
+    Schema::create('sessions', function (Blueprint $table) {
+        $table->string('id')->primary();
+        $table->foreignId('user_id')->nullable()->index();
+        $table->string('ip_address', 45)->nullable();
+        $table->text('user_agent')->nullable();
+        $table->longText('payload');
+        $table->integer('last_activity')->index();
+    });
+}
 
     public function down(): void
     {

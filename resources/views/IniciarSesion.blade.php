@@ -13,46 +13,45 @@
         href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Jomolhari&family=Kadwa:wght@400;700&display=swap"
         rel="stylesheet">
 
-    <!-- SOLO ROUTA CSS CORREGIDA -->
-    <link rel="stylesheet" href="styles/login.css">
+    <link rel="stylesheet" href="{{ asset('styles/login.css') }}">
 </head>
 
 <body>
 
     <div class="container">
-        <!-- IZQUIERDA -->
         <div class="left">
             <div class="login-card">
-                <!-- SOLO RUTA DE IMAGEN CORREGIDA -->
-                <img src="images/logo.png" class="logo">
+                <img src="{{ asset('images/logo.png') }}" class="logo">
 
                 <h2>Iniciar sesión</h2>
 
-                <form>
+                <form method="POST" action="{{ route('login.submit') }}">
+                    @csrf
                     <label>Correo Electrónico:</label>
-                    <input type="email" placeholder="example@gmail.com">
+                    <input type="email" name="email" placeholder="example@gmail.com" required>
 
                     <label>Contraseña:</label>
-                    <input type="password" placeholder="••••••••">
+                    <input type="password" name="password" placeholder="••••••••" required>
 
-                    <button class="btn-login">Iniciar sesión</button>
+                    @if ($errors->has('error'))
+                        <div class="error-message"
+                            style="
+        background:#ffdddd;
+        border-left:5px solid #ff5c5c;
+        padding:10px 15px;
+        margin-top:10px;
+        border-radius:5px;
+        color:#a10000;
+        font-weight:600;">
+                            {{ $errors->first('error') }}
+                        </div>
+                    @endif
 
-                    <div class="divider">Ó</div>
 
-                    <button class="btn-google">
-                        <img src="images/logo-google.jpeg" class="icon">
-                        Sign up with Google
-                    </button>
-
-                    <button class="btn-qr">
-                        <img src="images/logo-facebook.png" class="icon">
-                        Sign up with Facebook
-                    </button>
-
+                    <button type="submit" class="btn-login">Iniciar sesión</button>
 
                     <p class="register">
-                        <!-- RUTA ELIMINADA -->
-                        <a href="{{ route('registrarusuario') }}">¿Aún no estás en CodeVision? Regístrate</a>
+                        <a href="{{ route('register.view') }}">¿Aún no estás en CodeVision? Regístrate</a>
                     </p>
                 </form>
 
@@ -60,7 +59,6 @@
             </div>
         </div>
 
-        <!-- DERECHA -->
         <div class="right">
             <div class="welcome">
                 <h1>Bienvenido!</h1>
@@ -71,8 +69,6 @@
             </div>
         </div>
     </div>
-
-    <!-- SCRIPT ELIMINADO -->
 
 </body>
 

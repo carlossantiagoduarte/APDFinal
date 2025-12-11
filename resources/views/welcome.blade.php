@@ -3,87 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bienvenido a mi aplicación</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            color: #333;
-            margin: 0;
-            padding: 0;
-        }
+    <title>Bienvenido a CodeVision</title>
+<link rel="stylesheet" href="{{ asset('styles/welcome.css') }}">
 
-        header {
-            background-color: #4CAF50;
-            color: white;
-            text-align: center;
-            padding: 1em 0;
-        }
-
-        header h1 {
-            margin: 0;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .content {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 40px;
-        }
-
-        .content .box {
-            background-color: #fff;
-            padding: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            width: 48%;
-        }
-
-        .content .box h2 {
-            margin-top: 0;
-        }
-
-        .buttons {
-            margin-top: 20px;
-            text-align: center;
-        }
-
-        .buttons a {
-            display: inline-block;
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            margin: 10px;
-            text-decoration: none;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-
-        .buttons a:hover {
-            background-color: #45a049;
-        }
-
-        footer {
-            background-color: #333;
-            color: white;
-            text-align: center;
-            padding: 10px 0;
-            margin-top: 40px;
-        }
-
-        footer a {
-            color: #4CAF50;
-            text-decoration: none;
-        }
-    </style>
 </head>
 <body>
     <header>
-        <h1>Bienvenido a nuestra aplicación</h1>
+        <h1>CodeVision</h1>
     </header>
 
     <div class="container">
@@ -98,21 +24,39 @@
             </div>
         </div>
 
-        <!-- Verificación de si el usuario está autenticado -->
         <div class="buttons">
             @if (Auth::check())
-                <!-- Si está autenticado, redirigir al dashboard -->
-                <a href="{{ route('dashboard') }}">Ir al Dashboard</a>
+                <p>¡Hola, {{ Auth::user()->name }}! Navega a tu panel:</p>
+                
+                {{-- CORRECCIÓN AQUÍ: Usar nombres de rol en minúscula (judge, student, admin) --}}
+                
+                @if (Auth::user()->role === 'judge' || Auth::user()->hasRole('judge'))
+                    <a href="{{ route('dashboard.juez') }}">Ir al Dashboard Juez</a>
+
+                @elseif (Auth::user()->role === 'student' || Auth::user()->hasRole('student'))
+                    <a href="{{ route('dashboard.estudiante') }}">Ir al Dashboard Estudiante</a>
+
+                @elseif (Auth::user()->role === 'admin' || Auth::user()->hasRole('admin')) 
+                    <a href="{{ route('dashboard.admin') }}">Ir al Dashboard Admin</a>
+
+                @else
+                    {{-- Caso por defecto si el rol no coincide o no tiene rol --}}
+                    <a href="{{ route('dashboard') }}">Ir al Dashboard General</a>
+                @endif
+
             @else
-                <!-- Si no está autenticado, mostrar botones de Login y Register -->
-                <a href="{{ route('iniciarsesion') }}">Iniciar sesión</a>
-                <a href="{{ route('registrarusuario') }}">Registrarse</a>
+                <div class="auth-buttons">
+                    <p>Únete a nuestra plataforma de eventos tecnológicos.</p>
+                    <a href="{{ route('login') }}">Iniciar sesión</a>
+                    <a href="{{ route('register.view') }}">Registrarse</a>
+                </div>
             @endif
         </div>
+
     </div>
 
     <footer>
-        <p>&copy; 2025 Mi Aplicación | <a href="#">Privacidad</a> | <a href="#">Términos</a></p>
+        <p>&copy; 2025 CodeVision | <a href="#">Privacidad</a> | <a href="#">Términos</a></p>
     </footer>
 </body>
 </html>
